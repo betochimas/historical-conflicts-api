@@ -1,0 +1,305 @@
+package com.betochimas.historical_conflicts_api;
+
+import com.betochimas.historical_conflicts_api.domain.dto.BattleDto;
+import com.betochimas.historical_conflicts_api.domain.dto.ConflictDto;
+import com.betochimas.historical_conflicts_api.domain.dto.ConflictParticipantDto;
+import com.betochimas.historical_conflicts_api.domain.dto.NationDto;
+import com.betochimas.historical_conflicts_api.domain.model.BattleEntity;
+import com.betochimas.historical_conflicts_api.domain.model.ConflictEntity;
+import com.betochimas.historical_conflicts_api.domain.model.ConflictParticipantEntity;
+import com.betochimas.historical_conflicts_api.domain.model.ConflictType;
+import com.betochimas.historical_conflicts_api.domain.model.NationEntity;
+import com.betochimas.historical_conflicts_api.domain.model.ParticipantRole;
+
+import java.time.LocalDate;
+
+public final class TestDataUtil {
+
+    private TestDataUtil() {}
+
+    // --- Nation Entities ---
+
+    public static NationEntity createTestNationEntityA() {
+        NationEntity entity = new NationEntity();
+        entity.setName("Roman Empire");
+        entity.setRegion("Europe");
+        entity.setFoundedYear(-27);
+        entity.setDissolvedYear(476);
+        entity.setDescription("Ancient Mediterranean superpower centred on Rome.");
+        return entity;
+    }
+
+    public static NationEntity createTestNationEntityB() {
+        NationEntity entity = new NationEntity();
+        entity.setName("Ottoman Empire");
+        entity.setRegion("Middle East & Europe");
+        entity.setFoundedYear(1299);
+        entity.setDissolvedYear(1922);
+        entity.setDescription("Transcontinental empire lasting over six centuries.");
+        return entity;
+    }
+
+    public static NationEntity createTestNationEntityC() {
+        NationEntity entity = new NationEntity();
+        entity.setName("British Empire");
+        entity.setRegion("Global");
+        entity.setFoundedYear(1583);
+        entity.setDissolvedYear(1997);
+        entity.setDescription("Largest empire in history at its peak.");
+        return entity;
+    }
+
+    // --- Nation DTOs ---
+
+    public static NationDto createTestNationDtoA() {
+        return NationDto.builder()
+                .name("Roman Empire")
+                .region("Europe")
+                .foundedYear(-27)
+                .dissolvedYear(476)
+                .description("Ancient Mediterranean superpower centred on Rome.")
+                .build();
+    }
+
+    public static NationDto createTestNationDtoB() {
+        return NationDto.builder()
+                .name("Ottoman Empire")
+                .region("Middle East & Europe")
+                .foundedYear(1299)
+                .dissolvedYear(1922)
+                .description("Transcontinental empire lasting over six centuries.")
+                .build();
+    }
+
+    public static NationDto createTestNationDtoC() {
+        return NationDto.builder()
+                .name("British Empire")
+                .region("Global")
+                .foundedYear(1583)
+                .dissolvedYear(1997)
+                .description("Largest empire in history at its peak.")
+                .build();
+    }
+
+    // --- Conflict Entities ---
+
+    public static ConflictEntity createTestConflictEntityA() {
+        ConflictEntity entity = new ConflictEntity();
+        entity.setName("World War I");
+        entity.setConflictType(ConflictType.WAR);
+        entity.setStartDate(LocalDate.of(1914, 7, 28));
+        entity.setEndDate(LocalDate.of(1918, 11, 11));
+        entity.setOutcome("Allied victory");
+        entity.setDescription("Global war originating in Europe.");
+        return entity;
+    }
+
+    public static ConflictEntity createTestConflictEntityB() {
+        ConflictEntity entity = new ConflictEntity();
+        entity.setName("Hundred Years War");
+        entity.setConflictType(ConflictType.WAR);
+        entity.setStartDate(LocalDate.of(1337, 5, 24));
+        entity.setEndDate(LocalDate.of(1453, 10, 19));
+        entity.setOutcome("French victory");
+        entity.setDescription("Series of conflicts between England and France.");
+        return entity;
+    }
+
+    public static ConflictEntity createTestConflictEntityC() {
+        ConflictEntity entity = new ConflictEntity();
+        entity.setName("American Civil War");
+        entity.setConflictType(ConflictType.CIVIL_WAR);
+        entity.setStartDate(LocalDate.of(1861, 4, 12));
+        entity.setEndDate(LocalDate.of(1865, 4, 9));
+        entity.setOutcome("Union victory");
+        entity.setDescription("Civil war between Union and Confederate states.");
+        return entity;
+    }
+
+    // --- Conflict DTOs ---
+
+    public static ConflictDto createTestConflictDtoA() {
+        return ConflictDto.builder()
+                .name("World War I")
+                .conflictType(ConflictType.WAR)
+                .startDate(LocalDate.of(1914, 7, 28))
+                .endDate(LocalDate.of(1918, 11, 11))
+                .outcome("Allied victory")
+                .description("Global war originating in Europe.")
+                .build();
+    }
+
+    public static ConflictDto createTestConflictDtoB() {
+        return ConflictDto.builder()
+                .name("Hundred Years War")
+                .conflictType(ConflictType.WAR)
+                .startDate(LocalDate.of(1337, 5, 24))
+                .endDate(LocalDate.of(1453, 10, 19))
+                .outcome("French victory")
+                .description("Series of conflicts between England and France.")
+                .build();
+    }
+
+    public static ConflictDto createTestConflictDtoC() {
+        return ConflictDto.builder()
+                .name("American Civil War")
+                .conflictType(ConflictType.CIVIL_WAR)
+                .startDate(LocalDate.of(1861, 4, 12))
+                .endDate(LocalDate.of(1865, 4, 9))
+                .outcome("Union victory")
+                .description("Civil war between Union and Confederate states.")
+                .build();
+    }
+
+    // --- Battle Entities ---
+
+    public static BattleEntity createTestBattleEntityA(ConflictEntity conflict) {
+        BattleEntity entity = new BattleEntity();
+        entity.setConflict(conflict);
+        entity.setName("Battle of the Marne");
+        entity.setDate(LocalDate.of(1914, 9, 5));
+        entity.setLocation("Marne River, France");
+        entity.setTerrain("River valley");
+        entity.setOutcome("Allied victory");
+        entity.setDescription("Halted the German advance into France.");
+        return entity;
+    }
+
+    public static BattleEntity createTestBattleEntityB(ConflictEntity conflict) {
+        BattleEntity entity = new BattleEntity();
+        entity.setConflict(conflict);
+        entity.setName("Battle of Verdun");
+        entity.setDate(LocalDate.of(1916, 2, 21));
+        entity.setLocation("Verdun, France");
+        entity.setTerrain("Fortified hills");
+        entity.setOutcome("French victory");
+        entity.setDescription("One of the longest battles of WWI.");
+        return entity;
+    }
+
+    public static BattleEntity createTestBattleEntityC(ConflictEntity conflict) {
+        BattleEntity entity = new BattleEntity();
+        entity.setConflict(conflict);
+        entity.setName("Battle of the Somme");
+        entity.setDate(LocalDate.of(1916, 7, 1));
+        entity.setLocation("Somme, France");
+        entity.setTerrain("Open fields and trenches");
+        entity.setOutcome("Inconclusive");
+        entity.setDescription("One of the largest battles of WWI.");
+        return entity;
+    }
+
+    // --- Battle DTOs ---
+
+    public static BattleDto createTestBattleDtoA(Long conflictId) {
+        return BattleDto.builder()
+                .conflictId(conflictId)
+                .name("Battle of the Marne")
+                .date(LocalDate.of(1914, 9, 5))
+                .location("Marne River, France")
+                .terrain("River valley")
+                .outcome("Allied victory")
+                .description("Halted the German advance into France.")
+                .build();
+    }
+
+    public static BattleDto createTestBattleDtoB(Long conflictId) {
+        return BattleDto.builder()
+                .conflictId(conflictId)
+                .name("Battle of Verdun")
+                .date(LocalDate.of(1916, 2, 21))
+                .location("Verdun, France")
+                .terrain("Fortified hills")
+                .outcome("French victory")
+                .description("One of the longest battles of WWI.")
+                .build();
+    }
+
+    public static BattleDto createTestBattleDtoC(Long conflictId) {
+        return BattleDto.builder()
+                .conflictId(conflictId)
+                .name("Battle of the Somme")
+                .date(LocalDate.of(1916, 7, 1))
+                .location("Somme, France")
+                .terrain("Open fields and trenches")
+                .outcome("Inconclusive")
+                .description("One of the largest battles of WWI.")
+                .build();
+    }
+
+    // --- ConflictParticipant Entities ---
+
+    public static ConflictParticipantEntity createTestConflictParticipantEntityA(
+            ConflictEntity conflict, NationEntity nation) {
+        ConflictParticipantEntity entity = new ConflictParticipantEntity();
+        entity.setConflict(conflict);
+        entity.setNation(nation);
+        entity.setRole(ParticipantRole.ATTACKER);
+        entity.setTroopsCommitted(4_000_000);
+        entity.setCasualties(1_800_000);
+        entity.setOutcome("Victory");
+        return entity;
+    }
+
+    public static ConflictParticipantEntity createTestConflictParticipantEntityB(
+            ConflictEntity conflict, NationEntity nation) {
+        ConflictParticipantEntity entity = new ConflictParticipantEntity();
+        entity.setConflict(conflict);
+        entity.setNation(nation);
+        entity.setRole(ParticipantRole.DEFENDER);
+        entity.setTroopsCommitted(3_500_000);
+        entity.setCasualties(1_400_000);
+        entity.setOutcome("Defeat");
+        return entity;
+    }
+
+    public static ConflictParticipantEntity createTestConflictParticipantEntityC(
+            ConflictEntity conflict, NationEntity nation) {
+        ConflictParticipantEntity entity = new ConflictParticipantEntity();
+        entity.setConflict(conflict);
+        entity.setNation(nation);
+        entity.setRole(ParticipantRole.ALLY);
+        entity.setTroopsCommitted(2_000_000);
+        entity.setCasualties(900_000);
+        entity.setOutcome("Victory");
+        return entity;
+    }
+
+    // --- ConflictParticipant DTOs ---
+
+    public static ConflictParticipantDto createTestConflictParticipantDtoA(
+            Long conflictId, Long nationId) {
+        return ConflictParticipantDto.builder()
+                .conflictId(conflictId)
+                .nationId(nationId)
+                .role(ParticipantRole.ATTACKER)
+                .troopsCommitted(4_000_000)
+                .casualties(1_800_000)
+                .outcome("Victory")
+                .build();
+    }
+
+    public static ConflictParticipantDto createTestConflictParticipantDtoB(
+            Long conflictId, Long nationId) {
+        return ConflictParticipantDto.builder()
+                .conflictId(conflictId)
+                .nationId(nationId)
+                .role(ParticipantRole.DEFENDER)
+                .troopsCommitted(3_500_000)
+                .casualties(1_400_000)
+                .outcome("Defeat")
+                .build();
+    }
+
+    public static ConflictParticipantDto createTestConflictParticipantDtoC(
+            Long conflictId, Long nationId) {
+        return ConflictParticipantDto.builder()
+                .conflictId(conflictId)
+                .nationId(nationId)
+                .role(ParticipantRole.ALLY)
+                .troopsCommitted(2_000_000)
+                .casualties(900_000)
+                .outcome("Victory")
+                .build();
+    }
+}
