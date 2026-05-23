@@ -46,6 +46,10 @@ public class AuthService {
         if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
             throw new InvalidCredentialsException();
         }
+        if (!Boolean.TRUE.equals(user.getEnabled())) {
+            // Reuse the generic exception so a disabled account is indistinguishable from a bad password.
+            throw new InvalidCredentialsException();
+        }
         JwtService.IssuedToken issued = jwtService.issue(user.getUsername(), user.getRole());
         return new AuthResponse(issued.token(), issued.expiresAt());
     }
