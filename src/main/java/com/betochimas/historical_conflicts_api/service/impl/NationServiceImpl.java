@@ -1,9 +1,12 @@
 package com.betochimas.historical_conflicts_api.service.impl;
 
+import com.betochimas.historical_conflicts_api.config.CacheConfig;
 import com.betochimas.historical_conflicts_api.domain.dto.NationDto;
 import com.betochimas.historical_conflicts_api.domain.model.NationEntity;
 import com.betochimas.historical_conflicts_api.repository.NationRepository;
 import com.betochimas.historical_conflicts_api.service.NationService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,6 +34,8 @@ public class NationServiceImpl implements NationService {
     }
 
     @Override
+    // #result is the unwrapped value (Spring unwraps Optional), so guard against caching a miss.
+    @Cacheable(cacheNames = CacheConfig.NATIONS, key = "#id", unless = "#result == null")
     public Optional<NationDto> findOne(Long id) {
         return nationRepository.findById(id).map(this::toDto);
     }
@@ -41,6 +46,7 @@ public class NationServiceImpl implements NationService {
     }
 
     @Override
+    @CacheEvict(cacheNames = CacheConfig.NATIONS, key = "#id")
     public NationDto fullUpdate(Long id, NationDto nationDto) {
         nationDto.setId(id);
         NationEntity saved = nationRepository.save(toEntity(nationDto));
@@ -48,6 +54,7 @@ public class NationServiceImpl implements NationService {
     }
 
     @Override
+    @CacheEvict(cacheNames = CacheConfig.NATIONS, key = "#id")
     public Optional<NationDto> partialUpdate(Long id, NationDto nationDto) {
         return nationRepository.findById(id).map(existing -> {
             Optional.ofNullable(nationDto.getName()).ifPresent(existing::setName);
@@ -60,6 +67,7 @@ public class NationServiceImpl implements NationService {
     }
 
     @Override
+    @CacheEvict(cacheNames = CacheConfig.NATIONS, key = "#id")
     public void delete(Long id) {
         nationRepository.deleteById(id);
     }

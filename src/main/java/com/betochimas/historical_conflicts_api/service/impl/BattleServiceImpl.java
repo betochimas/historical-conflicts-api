@@ -1,5 +1,6 @@
 package com.betochimas.historical_conflicts_api.service.impl;
 
+import com.betochimas.historical_conflicts_api.config.CacheConfig;
 import com.betochimas.historical_conflicts_api.config.EntityNotFoundException;
 import com.betochimas.historical_conflicts_api.domain.dto.BattleDto;
 import com.betochimas.historical_conflicts_api.domain.model.BattleEntity;
@@ -7,6 +8,8 @@ import com.betochimas.historical_conflicts_api.domain.model.ConflictEntity;
 import com.betochimas.historical_conflicts_api.repository.BattleRepository;
 import com.betochimas.historical_conflicts_api.repository.ConflictRepository;
 import com.betochimas.historical_conflicts_api.service.BattleService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -40,6 +43,7 @@ public class BattleServiceImpl implements BattleService {
     }
 
     @Override
+    @Cacheable(cacheNames = CacheConfig.BATTLES, key = "#id", unless = "#result == null")
     public Optional<BattleDto> findOne(Long id) {
         return battleRepository.findById(id).map(this::toDto);
     }
@@ -50,12 +54,14 @@ public class BattleServiceImpl implements BattleService {
     }
 
     @Override
+    @CacheEvict(cacheNames = CacheConfig.BATTLES, key = "#id")
     public BattleDto fullUpdate(Long id, BattleDto battleDto) {
         battleDto.setId(id);
         return toDto(battleRepository.save(toEntity(battleDto)));
     }
 
     @Override
+    @CacheEvict(cacheNames = CacheConfig.BATTLES, key = "#id")
     public Optional<BattleDto> partialUpdate(Long id, BattleDto battleDto) {
         return battleRepository.findById(id).map(existing -> {
             Optional.ofNullable(battleDto.getConflictId())
@@ -72,6 +78,7 @@ public class BattleServiceImpl implements BattleService {
     }
 
     @Override
+    @CacheEvict(cacheNames = CacheConfig.BATTLES, key = "#id")
     public void delete(Long id) {
         battleRepository.deleteById(id);
     }

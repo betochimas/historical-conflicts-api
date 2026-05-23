@@ -9,11 +9,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.cache.CacheManager;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 @SpringBootTest
@@ -27,8 +29,12 @@ public abstract class AbstractIntegrationTest {
 
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:18");
 
+    static GenericContainer<?> redis =
+            new GenericContainer<>("redis:7-alpine").withExposedPorts(6379);
+
     static {
         postgres.start();
+        redis.start();
     }
 
     @DynamicPropertySource
@@ -36,6 +42,8 @@ public abstract class AbstractIntegrationTest {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("spring.data.redis.host", redis::getHost);
+        registry.add("spring.data.redis.port", () -> redis.getMappedPort(6379));
     }
 
     @Autowired
@@ -50,13 +58,24 @@ public abstract class AbstractIntegrationTest {
     @Autowired
     private JwtService jwtService;
 
+    @Autowired
+    private CacheManager cacheManager;
+
     private String cachedToken;
 
     @BeforeEach
-    void cleanDatabase() {
+    void cleanState() {
         jdbcTemplate.execute(
             "TRUNCATE conflict_participants, battles, conflicts, nations, users RESTART IDENTITY CASCADE"
         );
+        // Truncating the DB doesn't touch Redis — clear every cache so entries from one test
+        // can't leak into the next (cross-test isolation).
+        cacheManager.getCacheNames().forEach(name -> {
+            var cache = cacheManager.getCache(name);
+            if (cache != null) {
+                cache.clear();
+            }
+        });
         cachedToken = null;
     }
 

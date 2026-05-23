@@ -7,6 +7,7 @@ application-local.properties
 CLAUDE.md
 SESSION_*.md
 PROGRESS.md
+PHASE_2C_REDIS_DESIGN.md
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
