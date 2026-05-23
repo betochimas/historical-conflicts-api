@@ -1,5 +1,12 @@
 HELP.md
 .mcp.json
+.DS_Store
+application-local.properties
+
+### Claude Code ###
+CLAUDE.md
+SESSION_*.md
+PROGRESS.md
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/

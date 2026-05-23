@@ -4,9 +4,10 @@ import com.betochimas.historical_conflicts_api.domain.dto.NationDto;
 import com.betochimas.historical_conflicts_api.domain.model.NationEntity;
 import com.betochimas.historical_conflicts_api.repository.NationRepository;
 import com.betochimas.historical_conflicts_api.service.NationService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,10 +26,8 @@ public class NationServiceImpl implements NationService {
     }
 
     @Override
-    public List<NationDto> findAll() {
-        return nationRepository.findAll().stream()
-                .map(this::toDto)
-                .toList();
+    public Page<NationDto> findAll(Pageable pageable) {
+        return nationRepository.findAll(pageable).map(this::toDto);
     }
 
     @Override

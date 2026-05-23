@@ -2,14 +2,16 @@ package com.betochimas.historical_conflicts_api.controller;
 
 import com.betochimas.historical_conflicts_api.domain.dto.BattleDto;
 import com.betochimas.historical_conflicts_api.service.BattleService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/battles")
+@Tag(name = "Battles", description = "Manage battles within conflicts, with optional filter by conflict")
 public class BattleController {
 
     private final BattleService battleService;
@@ -24,11 +26,12 @@ public class BattleController {
     }
 
     @GetMapping
-    public ResponseEntity<List<BattleDto>> listBattles(
-            @RequestParam(required = false) Long conflictId) {
-        List<BattleDto> results = conflictId != null
-                ? battleService.findByConflictId(conflictId)
-                : battleService.findAll();
+    public ResponseEntity<Page<BattleDto>> listBattles(
+            @RequestParam(required = false) Long conflictId,
+            Pageable pageable) {
+        Page<BattleDto> results = conflictId != null
+                ? battleService.findByConflictId(conflictId, pageable)
+                : battleService.findAll(pageable);
         return ResponseEntity.ok(results);
     }
 

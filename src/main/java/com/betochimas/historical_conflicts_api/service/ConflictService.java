@@ -1,13 +1,14 @@
 package com.betochimas.historical_conflicts_api.service;
 
 import com.betochimas.historical_conflicts_api.domain.dto.ConflictDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface ConflictService {
     ConflictDto create(ConflictDto conflictDto);
-    List<ConflictDto> findAll();
+    Page<ConflictDto> findAll(Pageable pageable);
     Optional<ConflictDto> findOne(Long id);
     boolean isExists(Long id);
     ConflictDto fullUpdate(Long id, ConflictDto conflictDto);

@@ -36,6 +36,7 @@ public class ConflictControllerIntegrationTests extends AbstractIntegrationTest 
         String json = objectMapper.writeValueAsString(conflictDto);
 
         mockMvc.perform(post("/api/conflicts")
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated());
@@ -47,6 +48,7 @@ public class ConflictControllerIntegrationTests extends AbstractIntegrationTest 
         String json = objectMapper.writeValueAsString(conflictDto);
 
         mockMvc.perform(post("/api/conflicts")
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated())
@@ -73,9 +75,9 @@ public class ConflictControllerIntegrationTests extends AbstractIntegrationTest 
         mockMvc.perform(get("/api/conflicts")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").isNumber())
-                .andExpect(jsonPath("$[0].name").value("World War I"))
-                .andExpect(jsonPath("$[0].conflictType").value("WAR"));
+                .andExpect(jsonPath("$.content[0].id").isNumber())
+                .andExpect(jsonPath("$.content[0].name").value("World War I"))
+                .andExpect(jsonPath("$.content[0].conflictType").value("WAR"));
     }
 
     // --- GET by id ---
@@ -116,6 +118,7 @@ public class ConflictControllerIntegrationTests extends AbstractIntegrationTest 
         String json = objectMapper.writeValueAsString(TestDataUtil.createTestConflictDtoA());
 
         mockMvc.perform(put("/api/conflicts/{id}", 999)
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isNotFound());
@@ -127,6 +130,7 @@ public class ConflictControllerIntegrationTests extends AbstractIntegrationTest 
         String json = objectMapper.writeValueAsString(TestDataUtil.createTestConflictDtoB());
 
         mockMvc.perform(put("/api/conflicts/{id}", saved.getId())
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk());
@@ -139,6 +143,7 @@ public class ConflictControllerIntegrationTests extends AbstractIntegrationTest 
         String json = objectMapper.writeValueAsString(updateDto);
 
         mockMvc.perform(put("/api/conflicts/{id}", saved.getId())
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
@@ -155,6 +160,7 @@ public class ConflictControllerIntegrationTests extends AbstractIntegrationTest 
         String json = objectMapper.writeValueAsString(TestDataUtil.createTestConflictDtoA());
 
         mockMvc.perform(patch("/api/conflicts/{id}", 999)
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isNotFound());
@@ -167,6 +173,7 @@ public class ConflictControllerIntegrationTests extends AbstractIntegrationTest 
         String json = objectMapper.writeValueAsString(partialDto);
 
         mockMvc.perform(patch("/api/conflicts/{id}", saved.getId())
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk());
@@ -182,6 +189,7 @@ public class ConflictControllerIntegrationTests extends AbstractIntegrationTest 
         String json = objectMapper.writeValueAsString(partialDto);
 
         mockMvc.perform(patch("/api/conflicts/{id}", saved.getId())
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
@@ -192,13 +200,31 @@ public class ConflictControllerIntegrationTests extends AbstractIntegrationTest 
                 .andExpect(jsonPath("$.startDate").value("1914-07-28"));
     }
 
+    // --- Jackson date contract ---
+
+    // Locks in the contract that LocalDate fields serialize as ISO strings ("YYYY-MM-DD"),
+    // not as numeric arrays. Jackson 3.x in Spring Boot 4.0 produces this by default, but the
+    // pre-3.x toggle (write-dates-as-timestamps=false) was removed and is no longer available
+    // as a fallback — so a dedicated test guards against future regressions.
+    @Test
+    public void testThatLocalDateSerializesAsIsoString() throws Exception {
+        ConflictDto saved = conflictService.create(TestDataUtil.createTestConflictDtoA());
+
+        mockMvc.perform(get("/api/conflicts/{id}", saved.getId())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.startDate").value("1914-07-28"))
+                .andExpect(jsonPath("$.endDate").value("1918-11-11"));
+    }
+
     // --- DELETE ---
 
     @Test
     public void testThatDeleteConflictReturnsHttp204() throws Exception {
         ConflictDto saved = conflictService.create(TestDataUtil.createTestConflictDtoA());
 
-        mockMvc.perform(delete("/api/conflicts/{id}", saved.getId()))
+        mockMvc.perform(delete("/api/conflicts/{id}", saved.getId())
+                        .header("Authorization", authHeader()))
                 .andExpect(status().isNoContent());
     }
 
@@ -206,7 +232,8 @@ public class ConflictControllerIntegrationTests extends AbstractIntegrationTest 
     public void testThatDeleteConflictMeansConflictNoLongerExists() throws Exception {
         ConflictDto saved = conflictService.create(TestDataUtil.createTestConflictDtoA());
 
-        mockMvc.perform(delete("/api/conflicts/{id}", saved.getId()))
+        mockMvc.perform(delete("/api/conflicts/{id}", saved.getId())
+                        .header("Authorization", authHeader()))
                 .andExpect(status().isNoContent());
 
         mockMvc.perform(get("/api/conflicts/{id}", saved.getId()))

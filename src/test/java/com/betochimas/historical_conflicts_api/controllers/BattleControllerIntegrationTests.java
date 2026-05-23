@@ -47,9 +47,22 @@ public class BattleControllerIntegrationTests extends AbstractIntegrationTest {
         String json = objectMapper.writeValueAsString(TestDataUtil.createTestBattleDtoA(conflict.getId()));
 
         mockMvc.perform(post("/api/battles")
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void testThatCreateBattleReturnsHttp404WhenConflictMissing() throws Exception {
+        String json = objectMapper.writeValueAsString(TestDataUtil.createTestBattleDtoA(999L));
+
+        mockMvc.perform(post("/api/battles")
+                        .header("Authorization", authHeader())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Conflict not found: 999"));
     }
 
     @Test
@@ -58,6 +71,7 @@ public class BattleControllerIntegrationTests extends AbstractIntegrationTest {
         String json = objectMapper.writeValueAsString(TestDataUtil.createTestBattleDtoA(conflict.getId()));
 
         mockMvc.perform(post("/api/battles")
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated())
@@ -85,9 +99,9 @@ public class BattleControllerIntegrationTests extends AbstractIntegrationTest {
         mockMvc.perform(get("/api/battles")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").isNumber())
-                .andExpect(jsonPath("$[0].conflictId").value(conflict.getId()))
-                .andExpect(jsonPath("$[0].name").value("Battle of the Marne"));
+                .andExpect(jsonPath("$.content[0].id").isNumber())
+                .andExpect(jsonPath("$.content[0].conflictId").value(conflict.getId()))
+                .andExpect(jsonPath("$.content[0].name").value("Battle of the Marne"));
     }
 
     @Test
@@ -101,8 +115,8 @@ public class BattleControllerIntegrationTests extends AbstractIntegrationTest {
                         .param("conflictId", conflictA.getId().toString())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].name").value("Battle of the Marne"));
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].name").value("Battle of the Marne"));
     }
 
     // --- GET by id ---
@@ -146,6 +160,7 @@ public class BattleControllerIntegrationTests extends AbstractIntegrationTest {
         String json = objectMapper.writeValueAsString(TestDataUtil.createTestBattleDtoA(conflict.getId()));
 
         mockMvc.perform(put("/api/battles/{id}", 999)
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isNotFound());
@@ -158,6 +173,7 @@ public class BattleControllerIntegrationTests extends AbstractIntegrationTest {
         String json = objectMapper.writeValueAsString(TestDataUtil.createTestBattleDtoB(conflict.getId()));
 
         mockMvc.perform(put("/api/battles/{id}", saved.getId())
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk());
@@ -171,6 +187,7 @@ public class BattleControllerIntegrationTests extends AbstractIntegrationTest {
         String json = objectMapper.writeValueAsString(updateDto);
 
         mockMvc.perform(put("/api/battles/{id}", saved.getId())
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
@@ -188,6 +205,7 @@ public class BattleControllerIntegrationTests extends AbstractIntegrationTest {
         String json = objectMapper.writeValueAsString(TestDataUtil.createTestBattleDtoA(conflict.getId()));
 
         mockMvc.perform(patch("/api/battles/{id}", 999)
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isNotFound());
@@ -201,6 +219,7 @@ public class BattleControllerIntegrationTests extends AbstractIntegrationTest {
         String json = objectMapper.writeValueAsString(partialDto);
 
         mockMvc.perform(patch("/api/battles/{id}", saved.getId())
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk());
@@ -214,6 +233,7 @@ public class BattleControllerIntegrationTests extends AbstractIntegrationTest {
         String json = objectMapper.writeValueAsString(partialDto);
 
         mockMvc.perform(patch("/api/battles/{id}", saved.getId())
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
@@ -230,7 +250,8 @@ public class BattleControllerIntegrationTests extends AbstractIntegrationTest {
         ConflictDto conflict = savedConflict();
         BattleDto saved = battleService.create(TestDataUtil.createTestBattleDtoA(conflict.getId()));
 
-        mockMvc.perform(delete("/api/battles/{id}", saved.getId()))
+        mockMvc.perform(delete("/api/battles/{id}", saved.getId())
+                        .header("Authorization", authHeader()))
                 .andExpect(status().isNoContent());
     }
 
@@ -239,7 +260,8 @@ public class BattleControllerIntegrationTests extends AbstractIntegrationTest {
         ConflictDto conflict = savedConflict();
         BattleDto saved = battleService.create(TestDataUtil.createTestBattleDtoA(conflict.getId()));
 
-        mockMvc.perform(delete("/api/battles/{id}", saved.getId()))
+        mockMvc.perform(delete("/api/battles/{id}", saved.getId())
+                        .header("Authorization", authHeader()))
                 .andExpect(status().isNoContent());
 
         mockMvc.perform(get("/api/battles/{id}", saved.getId()))

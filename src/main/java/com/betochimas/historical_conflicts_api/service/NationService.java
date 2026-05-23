@@ -1,13 +1,14 @@
 package com.betochimas.historical_conflicts_api.service;
 
 import com.betochimas.historical_conflicts_api.domain.dto.NationDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface NationService {
     NationDto create(NationDto nationDto);
-    List<NationDto> findAll();
+    Page<NationDto> findAll(Pageable pageable);
     Optional<NationDto> findOne(Long id);
     boolean isExists(Long id);
     NationDto fullUpdate(Long id, NationDto nationDto);

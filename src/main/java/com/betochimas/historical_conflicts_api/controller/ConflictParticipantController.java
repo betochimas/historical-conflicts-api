@@ -2,14 +2,16 @@ package com.betochimas.historical_conflicts_api.controller;
 
 import com.betochimas.historical_conflicts_api.domain.dto.ConflictParticipantDto;
 import com.betochimas.historical_conflicts_api.service.ConflictParticipantService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/conflict-participants")
+@Tag(name = "Conflict Participants", description = "Manage nation participation in conflicts (role, troops, casualties)")
 public class ConflictParticipantController {
 
     private final ConflictParticipantService participantService;
@@ -25,11 +27,12 @@ public class ConflictParticipantController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ConflictParticipantDto>> listParticipants(
-            @RequestParam(required = false) Long conflictId) {
-        List<ConflictParticipantDto> results = conflictId != null
-                ? participantService.findByConflictId(conflictId)
-                : participantService.findAll();
+    public ResponseEntity<Page<ConflictParticipantDto>> listParticipants(
+            @RequestParam(required = false) Long conflictId,
+            Pageable pageable) {
+        Page<ConflictParticipantDto> results = conflictId != null
+                ? participantService.findByConflictId(conflictId, pageable)
+                : participantService.findAll(pageable);
         return ResponseEntity.ok(results);
     }
 

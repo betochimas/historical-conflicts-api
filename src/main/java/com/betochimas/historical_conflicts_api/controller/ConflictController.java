@@ -2,14 +2,16 @@ package com.betochimas.historical_conflicts_api.controller;
 
 import com.betochimas.historical_conflicts_api.domain.dto.ConflictDto;
 import com.betochimas.historical_conflicts_api.service.ConflictService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/conflicts")
+@Tag(name = "Conflicts", description = "Manage named wars, civil wars, rebellions, and other conflicts")
 public class ConflictController {
 
     private final ConflictService conflictService;
@@ -24,8 +26,8 @@ public class ConflictController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ConflictDto>> listConflicts() {
-        return ResponseEntity.ok(conflictService.findAll());
+    public ResponseEntity<Page<ConflictDto>> listConflicts(Pageable pageable) {
+        return ResponseEntity.ok(conflictService.findAll(pageable));
     }
 
     @GetMapping("/{id}")

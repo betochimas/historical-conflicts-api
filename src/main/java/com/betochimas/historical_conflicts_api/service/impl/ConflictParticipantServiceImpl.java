@@ -1,5 +1,6 @@
 package com.betochimas.historical_conflicts_api.service.impl;
 
+import com.betochimas.historical_conflicts_api.config.EntityNotFoundException;
 import com.betochimas.historical_conflicts_api.domain.dto.ConflictParticipantDto;
 import com.betochimas.historical_conflicts_api.domain.model.ConflictEntity;
 import com.betochimas.historical_conflicts_api.domain.model.ConflictParticipantEntity;
@@ -8,9 +9,10 @@ import com.betochimas.historical_conflicts_api.repository.ConflictParticipantRep
 import com.betochimas.historical_conflicts_api.repository.ConflictRepository;
 import com.betochimas.historical_conflicts_api.repository.NationRepository;
 import com.betochimas.historical_conflicts_api.service.ConflictParticipantService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -35,17 +37,13 @@ public class ConflictParticipantServiceImpl implements ConflictParticipantServic
     }
 
     @Override
-    public List<ConflictParticipantDto> findAll() {
-        return participantRepository.findAll().stream()
-                .map(this::toDto)
-                .toList();
+    public Page<ConflictParticipantDto> findAll(Pageable pageable) {
+        return participantRepository.findAll(pageable).map(this::toDto);
     }
 
     @Override
-    public List<ConflictParticipantDto> findByConflictId(Long conflictId) {
-        return participantRepository.findByConflictId(conflictId).stream()
-                .map(this::toDto)
-                .toList();
+    public Page<ConflictParticipantDto> findByConflictId(Long conflictId, Pageable pageable) {
+        return participantRepository.findByConflictId(conflictId, pageable).map(this::toDto);
     }
 
     @Override
@@ -88,9 +86,9 @@ public class ConflictParticipantServiceImpl implements ConflictParticipantServic
 
     private ConflictParticipantEntity toEntity(ConflictParticipantDto dto) {
         ConflictEntity conflict = conflictRepository.findById(dto.getConflictId())
-                .orElseThrow(() -> new RuntimeException("Conflict not found: " + dto.getConflictId()));
+                .orElseThrow(() -> new EntityNotFoundException("Conflict", dto.getConflictId()));
         NationEntity nation = nationRepository.findById(dto.getNationId())
-                .orElseThrow(() -> new RuntimeException("Nation not found: " + dto.getNationId()));
+                .orElseThrow(() -> new EntityNotFoundException("Nation", dto.getNationId()));
         ConflictParticipantEntity entity = new ConflictParticipantEntity();
         entity.setId(dto.getId());
         entity.setConflict(conflict);

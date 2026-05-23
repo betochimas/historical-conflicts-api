@@ -4,9 +4,10 @@ import com.betochimas.historical_conflicts_api.domain.dto.ConflictDto;
 import com.betochimas.historical_conflicts_api.domain.model.ConflictEntity;
 import com.betochimas.historical_conflicts_api.repository.ConflictRepository;
 import com.betochimas.historical_conflicts_api.service.ConflictService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,10 +25,8 @@ public class ConflictServiceImpl implements ConflictService {
     }
 
     @Override
-    public List<ConflictDto> findAll() {
-        return conflictRepository.findAll().stream()
-                .map(this::toDto)
-                .toList();
+    public Page<ConflictDto> findAll(Pageable pageable) {
+        return conflictRepository.findAll(pageable).map(this::toDto);
     }
 
     @Override

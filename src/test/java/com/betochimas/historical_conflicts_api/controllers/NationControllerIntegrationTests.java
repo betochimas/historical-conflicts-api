@@ -35,6 +35,7 @@ public class NationControllerIntegrationTests extends AbstractIntegrationTest {
         String json = objectMapper.writeValueAsString(nationDto);
 
         mockMvc.perform(post("/api/nations")
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated());
@@ -46,6 +47,7 @@ public class NationControllerIntegrationTests extends AbstractIntegrationTest {
         String json = objectMapper.writeValueAsString(nationDto);
 
         mockMvc.perform(post("/api/nations")
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated())
@@ -72,9 +74,9 @@ public class NationControllerIntegrationTests extends AbstractIntegrationTest {
         mockMvc.perform(get("/api/nations")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").isNumber())
-                .andExpect(jsonPath("$[0].name").value("Roman Empire"))
-                .andExpect(jsonPath("$[0].region").value("Europe"));
+                .andExpect(jsonPath("$.content[0].id").isNumber())
+                .andExpect(jsonPath("$.content[0].name").value("Roman Empire"))
+                .andExpect(jsonPath("$.content[0].region").value("Europe"));
     }
 
     // --- GET by id ---
@@ -114,6 +116,7 @@ public class NationControllerIntegrationTests extends AbstractIntegrationTest {
         String json = objectMapper.writeValueAsString(TestDataUtil.createTestNationDtoA());
 
         mockMvc.perform(put("/api/nations/{id}", 999)
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isNotFound());
@@ -125,6 +128,7 @@ public class NationControllerIntegrationTests extends AbstractIntegrationTest {
         String json = objectMapper.writeValueAsString(TestDataUtil.createTestNationDtoB());
 
         mockMvc.perform(put("/api/nations/{id}", saved.getId())
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk());
@@ -137,6 +141,7 @@ public class NationControllerIntegrationTests extends AbstractIntegrationTest {
         String json = objectMapper.writeValueAsString(updateDto);
 
         mockMvc.perform(put("/api/nations/{id}", saved.getId())
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
@@ -153,6 +158,7 @@ public class NationControllerIntegrationTests extends AbstractIntegrationTest {
         String json = objectMapper.writeValueAsString(TestDataUtil.createTestNationDtoA());
 
         mockMvc.perform(patch("/api/nations/{id}", 999)
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isNotFound());
@@ -165,6 +171,7 @@ public class NationControllerIntegrationTests extends AbstractIntegrationTest {
         String json = objectMapper.writeValueAsString(partialDto);
 
         mockMvc.perform(patch("/api/nations/{id}", saved.getId())
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk());
@@ -177,6 +184,7 @@ public class NationControllerIntegrationTests extends AbstractIntegrationTest {
         String json = objectMapper.writeValueAsString(partialDto);
 
         mockMvc.perform(patch("/api/nations/{id}", saved.getId())
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
@@ -192,7 +200,8 @@ public class NationControllerIntegrationTests extends AbstractIntegrationTest {
     public void testThatDeleteNationReturnsHttp204() throws Exception {
         NationDto saved = nationService.create(TestDataUtil.createTestNationDtoA());
 
-        mockMvc.perform(delete("/api/nations/{id}", saved.getId()))
+        mockMvc.perform(delete("/api/nations/{id}", saved.getId())
+                        .header("Authorization", authHeader()))
                 .andExpect(status().isNoContent());
     }
 
@@ -200,7 +209,8 @@ public class NationControllerIntegrationTests extends AbstractIntegrationTest {
     public void testThatDeleteNationMeansNationNoLongerExists() throws Exception {
         NationDto saved = nationService.create(TestDataUtil.createTestNationDtoA());
 
-        mockMvc.perform(delete("/api/nations/{id}", saved.getId()))
+        mockMvc.perform(delete("/api/nations/{id}", saved.getId())
+                        .header("Authorization", authHeader()))
                 .andExpect(status().isNoContent());
 
         mockMvc.perform(get("/api/nations/{id}", saved.getId()))

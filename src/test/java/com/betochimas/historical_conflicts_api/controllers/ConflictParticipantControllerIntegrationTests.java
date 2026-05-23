@@ -64,9 +64,38 @@ public class ConflictParticipantControllerIntegrationTests extends AbstractInteg
                 TestDataUtil.createTestConflictParticipantDtoA(conflict.getId(), nation.getId()));
 
         mockMvc.perform(post("/api/conflict-participants")
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void testThatCreateParticipantReturnsHttp404WhenConflictMissing() throws Exception {
+        NationDto nation = savedNation();
+        String json = objectMapper.writeValueAsString(
+                TestDataUtil.createTestConflictParticipantDtoA(999L, nation.getId()));
+
+        mockMvc.perform(post("/api/conflict-participants")
+                        .header("Authorization", authHeader())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Conflict not found: 999"));
+    }
+
+    @Test
+    public void testThatCreateParticipantReturnsHttp404WhenNationMissing() throws Exception {
+        ConflictDto conflict = savedConflict();
+        String json = objectMapper.writeValueAsString(
+                TestDataUtil.createTestConflictParticipantDtoA(conflict.getId(), 999L));
+
+        mockMvc.perform(post("/api/conflict-participants")
+                        .header("Authorization", authHeader())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Nation not found: 999"));
     }
 
     @Test
@@ -77,6 +106,7 @@ public class ConflictParticipantControllerIntegrationTests extends AbstractInteg
                 TestDataUtil.createTestConflictParticipantDtoA(conflict.getId(), nation.getId()));
 
         mockMvc.perform(post("/api/conflict-participants")
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isCreated())
@@ -106,10 +136,10 @@ public class ConflictParticipantControllerIntegrationTests extends AbstractInteg
         mockMvc.perform(get("/api/conflict-participants")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").isNumber())
-                .andExpect(jsonPath("$[0].conflictId").value(conflict.getId()))
-                .andExpect(jsonPath("$[0].nationId").value(nation.getId()))
-                .andExpect(jsonPath("$[0].role").value("ATTACKER"));
+                .andExpect(jsonPath("$.content[0].id").isNumber())
+                .andExpect(jsonPath("$.content[0].conflictId").value(conflict.getId()))
+                .andExpect(jsonPath("$.content[0].nationId").value(nation.getId()))
+                .andExpect(jsonPath("$.content[0].role").value("ATTACKER"));
     }
 
     @Test
@@ -126,8 +156,8 @@ public class ConflictParticipantControllerIntegrationTests extends AbstractInteg
                         .param("conflictId", conflictA.getId().toString())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].conflictId").value(conflictA.getId()));
+                .andExpect(jsonPath("$.content.length()").value(1))
+                .andExpect(jsonPath("$.content[0].conflictId").value(conflictA.getId()));
     }
 
     // --- GET by id ---
@@ -176,6 +206,7 @@ public class ConflictParticipantControllerIntegrationTests extends AbstractInteg
                 TestDataUtil.createTestConflictParticipantDtoA(conflict.getId(), nation.getId()));
 
         mockMvc.perform(put("/api/conflict-participants/{id}", 999)
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isNotFound());
@@ -190,6 +221,7 @@ public class ConflictParticipantControllerIntegrationTests extends AbstractInteg
                 TestDataUtil.createTestConflictParticipantDtoB(conflict.getId(), nation.getId()));
 
         mockMvc.perform(put("/api/conflict-participants/{id}", saved.getId())
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk());
@@ -205,6 +237,7 @@ public class ConflictParticipantControllerIntegrationTests extends AbstractInteg
         String json = objectMapper.writeValueAsString(updateDto);
 
         mockMvc.perform(put("/api/conflict-participants/{id}", saved.getId())
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
@@ -224,6 +257,7 @@ public class ConflictParticipantControllerIntegrationTests extends AbstractInteg
                 TestDataUtil.createTestConflictParticipantDtoA(conflict.getId(), nation.getId()));
 
         mockMvc.perform(patch("/api/conflict-participants/{id}", 999)
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isNotFound());
@@ -239,6 +273,7 @@ public class ConflictParticipantControllerIntegrationTests extends AbstractInteg
         String json = objectMapper.writeValueAsString(partialDto);
 
         mockMvc.perform(patch("/api/conflict-participants/{id}", saved.getId())
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk());
@@ -256,6 +291,7 @@ public class ConflictParticipantControllerIntegrationTests extends AbstractInteg
         String json = objectMapper.writeValueAsString(partialDto);
 
         mockMvc.perform(patch("/api/conflict-participants/{id}", saved.getId())
+                        .header("Authorization", authHeader())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk())
@@ -274,7 +310,8 @@ public class ConflictParticipantControllerIntegrationTests extends AbstractInteg
         NationDto nation = savedNation();
         ConflictParticipantDto saved = savedParticipant(conflict.getId(), nation.getId());
 
-        mockMvc.perform(delete("/api/conflict-participants/{id}", saved.getId()))
+        mockMvc.perform(delete("/api/conflict-participants/{id}", saved.getId())
+                        .header("Authorization", authHeader()))
                 .andExpect(status().isNoContent());
     }
 
@@ -284,7 +321,8 @@ public class ConflictParticipantControllerIntegrationTests extends AbstractInteg
         NationDto nation = savedNation();
         ConflictParticipantDto saved = savedParticipant(conflict.getId(), nation.getId());
 
-        mockMvc.perform(delete("/api/conflict-participants/{id}", saved.getId()))
+        mockMvc.perform(delete("/api/conflict-participants/{id}", saved.getId())
+                        .header("Authorization", authHeader()))
                 .andExpect(status().isNoContent());
 
         mockMvc.perform(get("/api/conflict-participants/{id}", saved.getId()))

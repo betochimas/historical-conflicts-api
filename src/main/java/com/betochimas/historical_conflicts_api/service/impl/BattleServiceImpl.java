@@ -1,14 +1,16 @@
 package com.betochimas.historical_conflicts_api.service.impl;
 
+import com.betochimas.historical_conflicts_api.config.EntityNotFoundException;
 import com.betochimas.historical_conflicts_api.domain.dto.BattleDto;
 import com.betochimas.historical_conflicts_api.domain.model.BattleEntity;
 import com.betochimas.historical_conflicts_api.domain.model.ConflictEntity;
 import com.betochimas.historical_conflicts_api.repository.BattleRepository;
 import com.betochimas.historical_conflicts_api.repository.ConflictRepository;
 import com.betochimas.historical_conflicts_api.service.BattleService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,17 +30,13 @@ public class BattleServiceImpl implements BattleService {
     }
 
     @Override
-    public List<BattleDto> findAll() {
-        return battleRepository.findAll().stream()
-                .map(this::toDto)
-                .toList();
+    public Page<BattleDto> findAll(Pageable pageable) {
+        return battleRepository.findAll(pageable).map(this::toDto);
     }
 
     @Override
-    public List<BattleDto> findByConflictId(Long conflictId) {
-        return battleRepository.findByConflictId(conflictId).stream()
-                .map(this::toDto)
-                .toList();
+    public Page<BattleDto> findByConflictId(Long conflictId, Pageable pageable) {
+        return battleRepository.findByConflictId(conflictId, pageable).map(this::toDto);
     }
 
     @Override
@@ -80,7 +78,7 @@ public class BattleServiceImpl implements BattleService {
 
     private BattleEntity toEntity(BattleDto dto) {
         ConflictEntity conflict = conflictRepository.findById(dto.getConflictId())
-                .orElseThrow(() -> new RuntimeException("Conflict not found: " + dto.getConflictId()));
+                .orElseThrow(() -> new EntityNotFoundException("Conflict", dto.getConflictId()));
         BattleEntity entity = new BattleEntity();
         entity.setId(dto.getId());
         entity.setConflict(conflict);
