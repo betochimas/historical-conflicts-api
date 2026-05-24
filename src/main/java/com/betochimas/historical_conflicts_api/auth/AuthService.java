@@ -5,6 +5,8 @@ import com.betochimas.historical_conflicts_api.auth.dto.LoginRequest;
 import com.betochimas.historical_conflicts_api.auth.dto.RegisterRequest;
 import com.betochimas.historical_conflicts_api.config.DuplicateUserException;
 import com.betochimas.historical_conflicts_api.config.InvalidCredentialsException;
+import com.betochimas.historical_conflicts_api.config.RegistrationDisabledException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,9 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
+    @Value("${app.registration.enabled:true}")
+    private boolean registrationEnabled;
+
     public AuthService(UserRepository userRepository,
                        PasswordEncoder passwordEncoder,
                        JwtService jwtService) {
@@ -24,6 +29,9 @@ public class AuthService {
     }
 
     public AuthResponse register(RegisterRequest request) {
+        if (!registrationEnabled) {
+            throw new RegistrationDisabledException();
+        }
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new DuplicateUserException("username", request.getUsername());
         }
