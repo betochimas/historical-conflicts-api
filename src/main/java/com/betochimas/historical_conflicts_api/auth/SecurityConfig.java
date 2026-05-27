@@ -58,11 +58,13 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(allowedOrigins);
+        // Use origin *patterns*, not plain origins: the configured list includes wildcard hosts
+        // (e.g. the Cloudflare Pages preview URLs `https://*.pages.dev`), which setAllowedOrigins
+        // does not match. setAllowedOriginPatterns accepts both literal origins and wildcards.
+        config.setAllowedOriginPatterns(allowedOrigins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        // Auth is via the Authorization header (not cookies), so credentials stay off —
-        // keeps CORS simple and avoids the wildcard-origin restriction.
+        // Auth is via the Authorization header (not cookies), so credentials stay off.
         config.setAllowCredentials(false);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

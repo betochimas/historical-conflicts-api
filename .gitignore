@@ -9,6 +9,7 @@ SESSION_*.md
 PROGRESS.md
 PHASE_2C_REDIS_DESIGN.md
 DEPLOYMENT_DESIGN.md
+CLOUDRUN_RUNBOOK.md
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
