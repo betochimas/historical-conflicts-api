@@ -14,8 +14,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @RequiredArgsConstructor
 @Entity
-@Table(name = "battles")
-public class BattleEntity {
+@Table(name = "theaters")
+public class TheaterEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,20 +26,15 @@ public class BattleEntity {
     @JoinColumn(name = "conflict_id", nullable = false)
     private ConflictEntity conflict;
 
-    // Optional: the theater of its conflict this battle was fought in (nullable).
-    @ManyToOne
-    @JoinColumn(name = "theater_id")
-    private TheaterEntity theater;
-
     @NonNull
     @Column(nullable = false)
     private String name;
 
-    private LocalDate date;
+    private String region;
 
-    private String location;
+    private LocalDate startDate;
 
-    private String terrain;
+    private LocalDate endDate;
 
     private String outcome;
 

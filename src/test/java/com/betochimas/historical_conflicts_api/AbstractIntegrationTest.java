@@ -66,7 +66,7 @@ public abstract class AbstractIntegrationTest {
     @BeforeEach
     void cleanState() {
         jdbcTemplate.execute(
-            "TRUNCATE conflict_participants, battles, conflicts, nations, users RESTART IDENTITY CASCADE"
+            "TRUNCATE conflict_participants, battles, theaters, conflicts, nations, users RESTART IDENTITY CASCADE"
         );
         // Truncating the DB doesn't touch Redis — clear every cache so entries from one test
         // can't leak into the next (cross-test isolation).

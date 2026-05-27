@@ -4,6 +4,7 @@ import com.betochimas.historical_conflicts_api.domain.dto.BattleDto;
 import com.betochimas.historical_conflicts_api.domain.dto.ConflictDto;
 import com.betochimas.historical_conflicts_api.domain.dto.ConflictParticipantDto;
 import com.betochimas.historical_conflicts_api.domain.dto.NationDto;
+import com.betochimas.historical_conflicts_api.domain.dto.TheaterDto;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.boot.cache.autoconfigure.RedisCacheManagerBuilderCustomizer;
 import org.springframework.cache.CacheManager;
@@ -29,7 +30,7 @@ import java.time.Duration;
  *       on the Spring-managed Jackson 3 {@link ObjectMapper}, so dates/enums round-trip exactly as
  *       at the web layer (e.g. {@code "1914-07-28"}); each cache is typed, so no {@code @class} hint.</li>
  *   <li><b>{@code prod}:</b> in-process Caffeine — no Redis service to run on Cloud Run. The cache
- *       abstraction ({@code @Cacheable}/{@code @CacheEvict}) and these four cache names are identical;
+ *       abstraction ({@code @Cacheable}/{@code @CacheEvict}) and these cache names are identical;
  *       only the store changes.</li>
  * </ul>
  * In {@code prod}, also set {@code management.health.redis.enabled=false} so the actuator health
@@ -43,6 +44,7 @@ public class CacheConfig {
     public static final String CONFLICTS = "conflicts";
     public static final String BATTLES = "battles";
     public static final String CONFLICT_PARTICIPANTS = "conflictParticipants";
+    public static final String THEATERS = "theaters";
 
     private static final Duration ENTITY_TTL = Duration.ofMinutes(15);
 
@@ -57,7 +59,8 @@ public class CacheConfig {
                 .withCacheConfiguration(NATIONS, entityCache(objectMapper, NationDto.class))
                 .withCacheConfiguration(CONFLICTS, entityCache(objectMapper, ConflictDto.class))
                 .withCacheConfiguration(BATTLES, entityCache(objectMapper, BattleDto.class))
-                .withCacheConfiguration(CONFLICT_PARTICIPANTS, entityCache(objectMapper, ConflictParticipantDto.class));
+                .withCacheConfiguration(CONFLICT_PARTICIPANTS, entityCache(objectMapper, ConflictParticipantDto.class))
+                .withCacheConfiguration(THEATERS, entityCache(objectMapper, TheaterDto.class));
     }
 
     private <T> RedisCacheConfiguration entityCache(ObjectMapper objectMapper, Class<T> type) {
@@ -71,14 +74,14 @@ public class CacheConfig {
     /**
      * Prod backend: in-process Caffeine. Declaring an explicit {@link CacheManager} bean makes
      * Spring Boot's Redis cache auto-config back off, so no Redis cache manager is created.
-     * The four caches are fixed (no dynamic creation) and share the 15-min write TTL; null values
+     * The caches are fixed (no dynamic creation) and share the 15-min write TTL; null values
      * are not cached, matching {@code disableCachingNullValues()} above.
      */
     @Bean
     @Profile("prod")
     public CacheManager caffeineCacheManager() {
         CaffeineCacheManager manager = new CaffeineCacheManager(
-                NATIONS, CONFLICTS, BATTLES, CONFLICT_PARTICIPANTS);
+                NATIONS, CONFLICTS, BATTLES, CONFLICT_PARTICIPANTS, THEATERS);
         manager.setCaffeine(Caffeine.newBuilder().expireAfterWrite(ENTITY_TTL));
         manager.setAllowNullValues(false);
         return manager;

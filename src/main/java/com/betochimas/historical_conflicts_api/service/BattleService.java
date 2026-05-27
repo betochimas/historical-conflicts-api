@@ -10,6 +10,7 @@ public interface BattleService {
     BattleDto create(BattleDto battleDto);
     Page<BattleDto> findAll(Pageable pageable);
     Page<BattleDto> findByConflictId(Long conflictId, Pageable pageable);
+    Page<BattleDto> findByTheaterId(Long theaterId, Pageable pageable);
     Optional<BattleDto> findOne(Long id);
     boolean isExists(Long id);
     BattleDto fullUpdate(Long id, BattleDto battleDto);

@@ -4,12 +4,14 @@ import com.betochimas.historical_conflicts_api.domain.dto.BattleDto;
 import com.betochimas.historical_conflicts_api.domain.dto.ConflictDto;
 import com.betochimas.historical_conflicts_api.domain.dto.ConflictParticipantDto;
 import com.betochimas.historical_conflicts_api.domain.dto.NationDto;
+import com.betochimas.historical_conflicts_api.domain.dto.TheaterDto;
 import com.betochimas.historical_conflicts_api.domain.model.BattleEntity;
 import com.betochimas.historical_conflicts_api.domain.model.ConflictEntity;
 import com.betochimas.historical_conflicts_api.domain.model.ConflictParticipantEntity;
 import com.betochimas.historical_conflicts_api.domain.model.ConflictType;
 import com.betochimas.historical_conflicts_api.domain.model.NationEntity;
 import com.betochimas.historical_conflicts_api.domain.model.ParticipantRole;
+import com.betochimas.historical_conflicts_api.domain.model.TheaterEntity;
 
 import java.time.LocalDate;
 
@@ -300,6 +302,82 @@ public final class TestDataUtil {
                 .troopsCommitted(2_000_000)
                 .casualties(900_000)
                 .outcome("Victory")
+                .build();
+    }
+
+    // --- Theater Entities ---
+
+    public static TheaterEntity createTestTheaterEntityA(ConflictEntity conflict) {
+        TheaterEntity entity = new TheaterEntity();
+        entity.setConflict(conflict);
+        entity.setName("Western Front");
+        entity.setRegion("France & Belgium");
+        entity.setStartDate(LocalDate.of(1914, 8, 4));
+        entity.setEndDate(LocalDate.of(1918, 11, 11));
+        entity.setOutcome("Allied victory");
+        entity.setDescription("The decisive theater of the war.");
+        return entity;
+    }
+
+    public static TheaterEntity createTestTheaterEntityB(ConflictEntity conflict) {
+        TheaterEntity entity = new TheaterEntity();
+        entity.setConflict(conflict);
+        entity.setName("Eastern Front");
+        entity.setRegion("Eastern Europe");
+        entity.setStartDate(LocalDate.of(1914, 8, 17));
+        entity.setEndDate(LocalDate.of(1918, 3, 3));
+        entity.setOutcome("Central Powers victory");
+        entity.setDescription("A war of movement between the Central Powers and Russia.");
+        return entity;
+    }
+
+    public static TheaterEntity createTestTheaterEntityC(ConflictEntity conflict) {
+        TheaterEntity entity = new TheaterEntity();
+        entity.setConflict(conflict);
+        entity.setName("Gallipoli & Middle East");
+        entity.setRegion("Ottoman Empire");
+        entity.setStartDate(LocalDate.of(1915, 4, 25));
+        entity.setEndDate(LocalDate.of(1918, 10, 30));
+        entity.setOutcome("Mixed");
+        entity.setDescription("Allied operations against the Ottoman Empire.");
+        return entity;
+    }
+
+    // --- Theater DTOs ---
+
+    public static TheaterDto createTestTheaterDtoA(Long conflictId) {
+        return TheaterDto.builder()
+                .conflictId(conflictId)
+                .name("Western Front")
+                .region("France & Belgium")
+                .startDate(LocalDate.of(1914, 8, 4))
+                .endDate(LocalDate.of(1918, 11, 11))
+                .outcome("Allied victory")
+                .description("The decisive theater of the war.")
+                .build();
+    }
+
+    public static TheaterDto createTestTheaterDtoB(Long conflictId) {
+        return TheaterDto.builder()
+                .conflictId(conflictId)
+                .name("Eastern Front")
+                .region("Eastern Europe")
+                .startDate(LocalDate.of(1914, 8, 17))
+                .endDate(LocalDate.of(1918, 3, 3))
+                .outcome("Central Powers victory")
+                .description("A war of movement between the Central Powers and Russia.")
+                .build();
+    }
+
+    public static TheaterDto createTestTheaterDtoC(Long conflictId) {
+        return TheaterDto.builder()
+                .conflictId(conflictId)
+                .name("Gallipoli & Middle East")
+                .region("Ottoman Empire")
+                .startDate(LocalDate.of(1915, 4, 25))
+                .endDate(LocalDate.of(1918, 10, 30))
+                .outcome("Mixed")
+                .description("Allied operations against the Ottoman Empire.")
                 .build();
     }
 }

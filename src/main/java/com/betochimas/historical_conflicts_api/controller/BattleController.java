@@ -28,10 +28,16 @@ public class BattleController {
     @GetMapping
     public ResponseEntity<Page<BattleDto>> listBattles(
             @RequestParam(required = false) Long conflictId,
+            @RequestParam(required = false) Long theaterId,
             Pageable pageable) {
-        Page<BattleDto> results = conflictId != null
-                ? battleService.findByConflictId(conflictId, pageable)
-                : battleService.findAll(pageable);
+        Page<BattleDto> results;
+        if (theaterId != null) {
+            results = battleService.findByTheaterId(theaterId, pageable);
+        } else if (conflictId != null) {
+            results = battleService.findByConflictId(conflictId, pageable);
+        } else {
+            results = battleService.findAll(pageable);
+        }
         return ResponseEntity.ok(results);
     }
 

@@ -14,6 +14,7 @@ import java.time.LocalDate;
 public class BattleDto {
     private Long id;
     private Long conflictId;
+    private Long theaterId;
     private String name;
     private LocalDate date;
     private String location;
