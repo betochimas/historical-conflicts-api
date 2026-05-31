@@ -12,6 +12,7 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.cache.CacheManager;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -21,6 +22,12 @@ import org.testcontainers.containers.PostgreSQLContainer;
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
+// The `test` profile routes caching to in-process Caffeine (like prod), not Redis. Redis's
+// allEntries clear() proved unreliable in this environment — both for the @BeforeEach cleanup
+// below and for production cross-eviction — so cache tests were flaky (FU-1). Caffeine's clear()
+// is synchronous and reliable, and it's the backend prod actually runs, so this raises fidelity.
+// The Redis container still starts (it backs the connection-factory/health beans), just not caching.
+@ActiveProfiles("test")
 public abstract class AbstractIntegrationTest {
 
     protected static final String TEST_USERNAME = "testuser";
@@ -68,8 +75,8 @@ public abstract class AbstractIntegrationTest {
         jdbcTemplate.execute(
             "TRUNCATE conflict_participants, leaders, battles, theaters, conflicts, nations, users RESTART IDENTITY CASCADE"
         );
-        // Truncating the DB doesn't touch Redis — clear every cache so entries from one test
-        // can't leak into the next (cross-test isolation).
+        // Clear every cache so entries from one test can't leak into the next. Under the `test`
+        // profile this is Caffeine, whose clear() is reliable (cross-test isolation).
         cacheManager.getCacheNames().forEach(name -> {
             var cache = cacheManager.getCache(name);
             if (cache != null) {

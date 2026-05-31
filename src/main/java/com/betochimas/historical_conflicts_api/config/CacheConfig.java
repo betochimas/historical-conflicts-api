@@ -27,12 +27,14 @@ import java.time.Duration;
  *
  * <p>The backend is profile-scoped:
  * <ul>
- *   <li><b>default / test (local):</b> Redis. Values are JSON via {@link JacksonJsonRedisSerializer}
+ *   <li><b>default (local dev):</b> Redis. Values are JSON via {@link JacksonJsonRedisSerializer}
  *       on the Spring-managed Jackson 3 {@link ObjectMapper}, so dates/enums round-trip exactly as
  *       at the web layer (e.g. {@code "1914-07-28"}); each cache is typed, so no {@code @class} hint.</li>
- *   <li><b>{@code prod}:</b> in-process Caffeine — no Redis service to run on Cloud Run. The cache
- *       abstraction ({@code @Cacheable}/{@code @CacheEvict}) and these cache names are identical;
- *       only the store changes.</li>
+ *   <li><b>{@code prod} and {@code test}:</b> in-process Caffeine. Prod has no Redis service to run on
+ *       Cloud Run; tests use Caffeine because Redis's {@code allEntries} clear() proved unreliable
+ *       in this environment (flaky cache tests — see FU-1), and Caffeine is what prod actually runs.
+ *       The cache abstraction ({@code @Cacheable}/{@code @CacheEvict}) and these cache names are
+ *       identical across both stores; only the store changes.</li>
  * </ul>
  * In {@code prod}, also set {@code management.health.redis.enabled=false} so the actuator health
  * check (used by Cloud Run) doesn't try to ping a Redis that isn't there.
@@ -51,11 +53,11 @@ public class CacheConfig {
     private static final Duration ENTITY_TTL = Duration.ofMinutes(15);
 
     /**
-     * Default/test backend: customizes the auto-configured Redis cache manager (one typed,
-     * TTL'd config per cache). Not active under {@code prod}, where Caffeine is used instead.
+     * Local-dev backend: customizes the auto-configured Redis cache manager (one typed, TTL'd
+     * config per cache). Not active under {@code prod} or {@code test}, which use Caffeine instead.
      */
     @Bean
-    @Profile("!prod")
+    @Profile("!prod & !test")
     public RedisCacheManagerBuilderCustomizer redisCacheCustomizer(ObjectMapper objectMapper) {
         return builder -> builder
                 .withCacheConfiguration(NATIONS, entityCache(objectMapper, NationDto.class))
@@ -75,13 +77,13 @@ public class CacheConfig {
     }
 
     /**
-     * Prod backend: in-process Caffeine. Declaring an explicit {@link CacheManager} bean makes
-     * Spring Boot's Redis cache auto-config back off, so no Redis cache manager is created.
+     * Prod + test backend: in-process Caffeine. Declaring an explicit {@link CacheManager} bean
+     * makes Spring Boot's Redis cache auto-config back off, so no Redis cache manager is created.
      * The caches are fixed (no dynamic creation) and share the 15-min write TTL; null values
      * are not cached, matching {@code disableCachingNullValues()} above.
      */
     @Bean
-    @Profile("prod")
+    @Profile({"prod", "test"})
     public CacheManager caffeineCacheManager() {
         CaffeineCacheManager manager = new CaffeineCacheManager(
                 NATIONS, CONFLICTS, BATTLES, CONFLICT_PARTICIPANTS, THEATERS, LEADERS);
