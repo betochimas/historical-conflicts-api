@@ -3,6 +3,7 @@ package com.betochimas.historical_conflicts_api.config;
 import com.betochimas.historical_conflicts_api.domain.dto.BattleDto;
 import com.betochimas.historical_conflicts_api.domain.dto.ConflictDto;
 import com.betochimas.historical_conflicts_api.domain.dto.ConflictParticipantDto;
+import com.betochimas.historical_conflicts_api.domain.dto.LeaderDto;
 import com.betochimas.historical_conflicts_api.domain.dto.NationDto;
 import com.betochimas.historical_conflicts_api.domain.dto.TheaterDto;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -45,6 +46,7 @@ public class CacheConfig {
     public static final String BATTLES = "battles";
     public static final String CONFLICT_PARTICIPANTS = "conflictParticipants";
     public static final String THEATERS = "theaters";
+    public static final String LEADERS = "leaders";
 
     private static final Duration ENTITY_TTL = Duration.ofMinutes(15);
 
@@ -60,7 +62,8 @@ public class CacheConfig {
                 .withCacheConfiguration(CONFLICTS, entityCache(objectMapper, ConflictDto.class))
                 .withCacheConfiguration(BATTLES, entityCache(objectMapper, BattleDto.class))
                 .withCacheConfiguration(CONFLICT_PARTICIPANTS, entityCache(objectMapper, ConflictParticipantDto.class))
-                .withCacheConfiguration(THEATERS, entityCache(objectMapper, TheaterDto.class));
+                .withCacheConfiguration(THEATERS, entityCache(objectMapper, TheaterDto.class))
+                .withCacheConfiguration(LEADERS, entityCache(objectMapper, LeaderDto.class));
     }
 
     private <T> RedisCacheConfiguration entityCache(ObjectMapper objectMapper, Class<T> type) {
@@ -81,7 +84,7 @@ public class CacheConfig {
     @Profile("prod")
     public CacheManager caffeineCacheManager() {
         CaffeineCacheManager manager = new CaffeineCacheManager(
-                NATIONS, CONFLICTS, BATTLES, CONFLICT_PARTICIPANTS, THEATERS);
+                NATIONS, CONFLICTS, BATTLES, CONFLICT_PARTICIPANTS, THEATERS, LEADERS);
         manager.setCaffeine(Caffeine.newBuilder().expireAfterWrite(ENTITY_TTL));
         manager.setAllowNullValues(false);
         return manager;

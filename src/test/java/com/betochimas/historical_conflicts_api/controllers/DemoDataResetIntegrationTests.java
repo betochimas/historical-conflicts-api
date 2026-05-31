@@ -38,6 +38,8 @@ public class DemoDataResetIntegrationTests extends AbstractIntegrationTest {
         assertEquals(7, count("nations"));
         assertEquals(1, count("conflicts"));
         assertEquals(5, count("battles"));
+        assertEquals(3, count("theaters"));
+        assertEquals(7, count("leaders"));
         assertEquals(7, count("conflict_participants"));
     }
 

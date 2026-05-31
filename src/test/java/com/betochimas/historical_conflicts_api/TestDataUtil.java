@@ -3,12 +3,15 @@ package com.betochimas.historical_conflicts_api;
 import com.betochimas.historical_conflicts_api.domain.dto.BattleDto;
 import com.betochimas.historical_conflicts_api.domain.dto.ConflictDto;
 import com.betochimas.historical_conflicts_api.domain.dto.ConflictParticipantDto;
+import com.betochimas.historical_conflicts_api.domain.dto.LeaderDto;
 import com.betochimas.historical_conflicts_api.domain.dto.NationDto;
 import com.betochimas.historical_conflicts_api.domain.dto.TheaterDto;
 import com.betochimas.historical_conflicts_api.domain.model.BattleEntity;
 import com.betochimas.historical_conflicts_api.domain.model.ConflictEntity;
 import com.betochimas.historical_conflicts_api.domain.model.ConflictParticipantEntity;
 import com.betochimas.historical_conflicts_api.domain.model.ConflictType;
+import com.betochimas.historical_conflicts_api.domain.model.LeaderEntity;
+import com.betochimas.historical_conflicts_api.domain.model.LeaderRole;
 import com.betochimas.historical_conflicts_api.domain.model.NationEntity;
 import com.betochimas.historical_conflicts_api.domain.model.ParticipantRole;
 import com.betochimas.historical_conflicts_api.domain.model.TheaterEntity;
@@ -378,6 +381,82 @@ public final class TestDataUtil {
                 .endDate(LocalDate.of(1918, 10, 30))
                 .outcome("Mixed")
                 .description("Allied operations against the Ottoman Empire.")
+                .build();
+    }
+
+    // --- Leader Entities ---
+
+    public static LeaderEntity createTestLeaderEntityA(NationEntity nation) {
+        LeaderEntity entity = new LeaderEntity();
+        entity.setNation(nation);
+        entity.setName("Woodrow Wilson");
+        entity.setRole(LeaderRole.HEAD_OF_STATE);
+        entity.setTitle("President of the United States");
+        entity.setBirthYear(1856);
+        entity.setDeathYear(1924);
+        entity.setDescription("Led the US into WWI and championed the Fourteen Points.");
+        return entity;
+    }
+
+    public static LeaderEntity createTestLeaderEntityB(NationEntity nation) {
+        LeaderEntity entity = new LeaderEntity();
+        entity.setNation(nation);
+        entity.setName("Ferdinand Foch");
+        entity.setRole(LeaderRole.GENERAL);
+        entity.setTitle("Marshal of France");
+        entity.setBirthYear(1851);
+        entity.setDeathYear(1929);
+        entity.setDescription("Supreme Allied Commander on the Western Front from April 1918.");
+        return entity;
+    }
+
+    public static LeaderEntity createTestLeaderEntityC(NationEntity nation) {
+        LeaderEntity entity = new LeaderEntity();
+        entity.setNation(nation);
+        entity.setName("Nicholas II");
+        entity.setRole(LeaderRole.MONARCH);
+        entity.setTitle("Tsar of Russia");
+        entity.setBirthYear(1868);
+        entity.setDeathYear(1918);
+        entity.setDescription("Last Russian emperor; overthrown in the February Revolution.");
+        return entity;
+    }
+
+    // --- Leader DTOs ---
+
+    public static LeaderDto createTestLeaderDtoA(Long nationId) {
+        return LeaderDto.builder()
+                .nationId(nationId)
+                .name("Woodrow Wilson")
+                .role(LeaderRole.HEAD_OF_STATE)
+                .title("President of the United States")
+                .birthYear(1856)
+                .deathYear(1924)
+                .description("Led the US into WWI and championed the Fourteen Points.")
+                .build();
+    }
+
+    public static LeaderDto createTestLeaderDtoB(Long nationId) {
+        return LeaderDto.builder()
+                .nationId(nationId)
+                .name("Ferdinand Foch")
+                .role(LeaderRole.GENERAL)
+                .title("Marshal of France")
+                .birthYear(1851)
+                .deathYear(1929)
+                .description("Supreme Allied Commander on the Western Front from April 1918.")
+                .build();
+    }
+
+    public static LeaderDto createTestLeaderDtoC(Long nationId) {
+        return LeaderDto.builder()
+                .nationId(nationId)
+                .name("Nicholas II")
+                .role(LeaderRole.MONARCH)
+                .title("Tsar of Russia")
+                .birthYear(1868)
+                .deathYear(1918)
+                .description("Last Russian emperor; overthrown in the February Revolution.")
                 .build();
     }
 }
