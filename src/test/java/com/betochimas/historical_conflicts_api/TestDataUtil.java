@@ -204,6 +204,8 @@ public final class TestDataUtil {
                 .location("Marne River, France")
                 .terrain("River valley")
                 .outcome("Allied victory")
+                .latitude(48.96)
+                .longitude(3.39)
                 .description("Halted the German advance into France.")
                 .build();
     }

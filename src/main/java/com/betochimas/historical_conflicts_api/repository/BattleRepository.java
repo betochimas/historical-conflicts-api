@@ -14,6 +14,8 @@ import java.util.List;
 public interface BattleRepository extends JpaRepository<BattleEntity, Long> {
     Page<BattleEntity> findByConflictId(Long conflictId, Pageable pageable);
 
+    List<BattleEntity> findByConflictId(Long conflictId);
+
     Page<BattleEntity> findByTheaterId(Long theaterId, Pageable pageable);
 
     @Query("select b.id from BattleEntity b where b.theater.id = :theaterId")

@@ -43,6 +43,11 @@ public class BattleEntity {
 
     private String outcome;
 
+    // Optional point geometry for map rendering (nullable — not every battle has a pin).
+    private Double latitude;
+
+    private Double longitude;
+
     @Column(length = 2000)
     private String description;
 }

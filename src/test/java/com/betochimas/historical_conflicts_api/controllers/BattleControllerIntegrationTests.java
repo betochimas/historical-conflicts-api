@@ -82,6 +82,20 @@ public class BattleControllerIntegrationTests extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.outcome").value("Allied victory"));
     }
 
+    @Test
+    public void testThatCreateBattleRoundTripsCoordinates() throws Exception {
+        ConflictDto conflict = savedConflict();
+        String json = objectMapper.writeValueAsString(TestDataUtil.createTestBattleDtoA(conflict.getId()));
+
+        mockMvc.perform(post("/api/battles")
+                        .header("Authorization", authHeader())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.latitude").value(48.96))
+                .andExpect(jsonPath("$.longitude").value(3.39));
+    }
+
     // --- GET all ---
 
     @Test

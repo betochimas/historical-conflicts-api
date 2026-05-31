@@ -20,5 +20,7 @@ public class BattleDto {
     private String location;
     private String terrain;
     private String outcome;
+    private Double latitude;
+    private Double longitude;
     private String description;
 }

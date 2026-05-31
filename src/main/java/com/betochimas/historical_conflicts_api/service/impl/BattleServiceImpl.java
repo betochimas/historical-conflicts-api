@@ -96,6 +96,8 @@ public class BattleServiceImpl implements BattleService {
             Optional.ofNullable(battleDto.getLocation()).ifPresent(existing::setLocation);
             Optional.ofNullable(battleDto.getTerrain()).ifPresent(existing::setTerrain);
             Optional.ofNullable(battleDto.getOutcome()).ifPresent(existing::setOutcome);
+            Optional.ofNullable(battleDto.getLatitude()).ifPresent(existing::setLatitude);
+            Optional.ofNullable(battleDto.getLongitude()).ifPresent(existing::setLongitude);
             Optional.ofNullable(battleDto.getDescription()).ifPresent(existing::setDescription);
             // Re-check the (possibly newly-changed) theater against the (possibly newly-changed) conflict.
             if (existing.getTheater() != null) {
@@ -125,6 +127,8 @@ public class BattleServiceImpl implements BattleService {
         entity.setLocation(dto.getLocation());
         entity.setTerrain(dto.getTerrain());
         entity.setOutcome(dto.getOutcome());
+        entity.setLatitude(dto.getLatitude());
+        entity.setLongitude(dto.getLongitude());
         entity.setDescription(dto.getDescription());
         if (dto.getTheaterId() != null) {
             TheaterEntity theater = theaterRepository.findById(dto.getTheaterId())
@@ -153,6 +157,8 @@ public class BattleServiceImpl implements BattleService {
                 .location(entity.getLocation())
                 .terrain(entity.getTerrain())
                 .outcome(entity.getOutcome())
+                .latitude(entity.getLatitude())
+                .longitude(entity.getLongitude())
                 .description(entity.getDescription())
                 .build();
     }
