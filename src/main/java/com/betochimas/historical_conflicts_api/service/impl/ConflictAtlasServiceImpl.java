@@ -154,6 +154,7 @@ public class ConflictAtlasServiceImpl implements ConflictAtlasService {
                 .role(p.getRole())
                 .troopsCommitted(p.getTroopsCommitted())
                 .casualties(p.getCasualties())
+                .side(p.getSide())
                 .build();
     }
 }

@@ -39,4 +39,7 @@ public class ConflictParticipantEntity {
     private Integer casualties;
 
     private String outcome;
+
+    /** Coalition / belligerent group this participant fought on (e.g. "Allied Powers"). Free text, nullable. */
+    private String side;
 }

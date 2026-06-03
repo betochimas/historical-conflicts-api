@@ -81,6 +81,7 @@ public class ConflictParticipantServiceImpl implements ConflictParticipantServic
             Optional.ofNullable(dto.getTroopsCommitted()).ifPresent(existing::setTroopsCommitted);
             Optional.ofNullable(dto.getCasualties()).ifPresent(existing::setCasualties);
             Optional.ofNullable(dto.getOutcome()).ifPresent(existing::setOutcome);
+            Optional.ofNullable(dto.getSide()).ifPresent(existing::setSide);
             return toDto(participantRepository.save(existing));
         });
     }
@@ -104,6 +105,7 @@ public class ConflictParticipantServiceImpl implements ConflictParticipantServic
         entity.setTroopsCommitted(dto.getTroopsCommitted());
         entity.setCasualties(dto.getCasualties());
         entity.setOutcome(dto.getOutcome());
+        entity.setSide(dto.getSide());
         return entity;
     }
 
@@ -116,6 +118,7 @@ public class ConflictParticipantServiceImpl implements ConflictParticipantServic
                 .troopsCommitted(entity.getTroopsCommitted())
                 .casualties(entity.getCasualties())
                 .outcome(entity.getOutcome())
+                .side(entity.getSide())
                 .build();
     }
 }

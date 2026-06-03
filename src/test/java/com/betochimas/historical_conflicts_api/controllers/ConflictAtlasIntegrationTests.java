@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -83,6 +84,9 @@ public class ConflictAtlasIntegrationTests extends AbstractIntegrationTest {
                 .andExpect(jsonPath("$.battles.length()").value(3))
                 .andExpect(jsonPath("$.theaters.length()").value(1))
                 .andExpect(jsonPath("$.participants.length()").value(2))
+                // Participants carry their coalition side (order-independent; drives map coalition colors).
+                .andExpect(jsonPath("$.participants[*].side",
+                        containsInAnyOrder("Allied Powers", "Central Powers")))
                 .andExpect(jsonPath("$.stats.totalBattles").value(3))
                 .andExpect(jsonPath("$.stats.totalTheaters").value(1))
                 .andExpect(jsonPath("$.stats.totalParticipants").value(2))

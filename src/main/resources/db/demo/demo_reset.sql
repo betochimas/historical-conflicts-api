@@ -132,38 +132,38 @@ SELECT id, 'Mehmed V', 'MONARCH', 'Sultan of the Ottoman Empire', 1844, 1918,
 FROM nations WHERE name = 'Ottoman Empire';
 
 -- Conflict participants
-INSERT INTO conflict_participants (conflict_id, nation_id, role, troops_committed, casualties, outcome)
-SELECT c.id, n.id, 'DEFENDER', 8900000, 702000, 'Victory'
+INSERT INTO conflict_participants (conflict_id, nation_id, role, troops_committed, casualties, outcome, side)
+SELECT c.id, n.id, 'DEFENDER', 8900000, 702000, 'Victory', 'Allied Powers'
 FROM conflicts c, nations n
 WHERE c.name = 'World War I' AND n.name = 'United Kingdom';
 
-INSERT INTO conflict_participants (conflict_id, nation_id, role, troops_committed, casualties, outcome)
-SELECT c.id, n.id, 'DEFENDER', 8400000, 1397000, 'Victory'
+INSERT INTO conflict_participants (conflict_id, nation_id, role, troops_committed, casualties, outcome, side)
+SELECT c.id, n.id, 'DEFENDER', 8400000, 1397000, 'Victory', 'Allied Powers'
 FROM conflicts c, nations n
 WHERE c.name = 'World War I' AND n.name = 'France';
 
-INSERT INTO conflict_participants (conflict_id, nation_id, role, troops_committed, casualties, outcome)
-SELECT c.id, n.id, 'ATTACKER', 13500000, 2037000, 'Defeat'
+INSERT INTO conflict_participants (conflict_id, nation_id, role, troops_committed, casualties, outcome, side)
+SELECT c.id, n.id, 'ATTACKER', 13500000, 2037000, 'Defeat', 'Central Powers'
 FROM conflicts c, nations n
 WHERE c.name = 'World War I' AND n.name = 'German Empire';
 
-INSERT INTO conflict_participants (conflict_id, nation_id, role, troops_committed, casualties, outcome)
-SELECT c.id, n.id, 'ALLY', 12000000, 1700000, 'Defeat'
+INSERT INTO conflict_participants (conflict_id, nation_id, role, troops_committed, casualties, outcome, side)
+SELECT c.id, n.id, 'ALLY', 12000000, 1700000, 'Defeat', 'Allied Powers'
 FROM conflicts c, nations n
 WHERE c.name = 'World War I' AND n.name = 'Russian Empire';
 
-INSERT INTO conflict_participants (conflict_id, nation_id, role, troops_committed, casualties, outcome)
-SELECT c.id, n.id, 'ATTACKER', 7800000, 1567000, 'Defeat'
+INSERT INTO conflict_participants (conflict_id, nation_id, role, troops_committed, casualties, outcome, side)
+SELECT c.id, n.id, 'ATTACKER', 7800000, 1567000, 'Defeat', 'Central Powers'
 FROM conflicts c, nations n
 WHERE c.name = 'World War I' AND n.name = 'Austria-Hungary';
 
-INSERT INTO conflict_participants (conflict_id, nation_id, role, troops_committed, casualties, outcome)
-SELECT c.id, n.id, 'COALITION', 2850000, 771000, 'Defeat'
+INSERT INTO conflict_participants (conflict_id, nation_id, role, troops_committed, casualties, outcome, side)
+SELECT c.id, n.id, 'COALITION', 2850000, 771000, 'Defeat', 'Central Powers'
 FROM conflicts c, nations n
 WHERE c.name = 'World War I' AND n.name = 'Ottoman Empire';
 
-INSERT INTO conflict_participants (conflict_id, nation_id, role, troops_committed, casualties, outcome)
-SELECT c.id, n.id, 'ALLY', 4700000, 116516, 'Victory'
+INSERT INTO conflict_participants (conflict_id, nation_id, role, troops_committed, casualties, outcome, side)
+SELECT c.id, n.id, 'ALLY', 4700000, 116516, 'Victory', 'Allied Powers'
 FROM conflicts c, nations n
 WHERE c.name = 'World War I' AND n.name = 'United States';
 
@@ -240,12 +240,12 @@ UPDATE battles SET theater_id = (
 WHERE conflict_id = (SELECT id FROM conflicts WHERE name = 'Russo-Japanese War')
   AND name IN ('Battle of Port Arthur', 'Battle of the Yellow Sea', 'Battle of Tsushima');
 
-INSERT INTO conflict_participants (conflict_id, nation_id, role, troops_committed, casualties, outcome)
-SELECT c.id, n.id, 'ATTACKER', 1200000, 240000, 'Victory'
+INSERT INTO conflict_participants (conflict_id, nation_id, role, troops_committed, casualties, outcome, side)
+SELECT c.id, n.id, 'ATTACKER', 1200000, 240000, 'Victory', 'Empire of Japan'
 FROM conflicts c, nations n
 WHERE c.name = 'Russo-Japanese War' AND n.name = 'Empire of Japan';
 
-INSERT INTO conflict_participants (conflict_id, nation_id, role, troops_committed, casualties, outcome)
-SELECT c.id, n.id, 'DEFENDER', 1365000, 170000, 'Defeat'
+INSERT INTO conflict_participants (conflict_id, nation_id, role, troops_committed, casualties, outcome, side)
+SELECT c.id, n.id, 'DEFENDER', 1365000, 170000, 'Defeat', 'Russian Empire'
 FROM conflicts c, nations n
 WHERE c.name = 'Russo-Japanese War' AND n.name = 'Russian Empire';

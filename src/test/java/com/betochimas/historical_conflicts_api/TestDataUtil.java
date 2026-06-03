@@ -245,6 +245,7 @@ public final class TestDataUtil {
         entity.setTroopsCommitted(4_000_000);
         entity.setCasualties(1_800_000);
         entity.setOutcome("Victory");
+        entity.setSide("Allied Powers");
         return entity;
     }
 
@@ -257,6 +258,7 @@ public final class TestDataUtil {
         entity.setTroopsCommitted(3_500_000);
         entity.setCasualties(1_400_000);
         entity.setOutcome("Defeat");
+        entity.setSide("Central Powers");
         return entity;
     }
 
@@ -269,6 +271,7 @@ public final class TestDataUtil {
         entity.setTroopsCommitted(2_000_000);
         entity.setCasualties(900_000);
         entity.setOutcome("Victory");
+        entity.setSide("Allied Powers");
         return entity;
     }
 
@@ -283,6 +286,7 @@ public final class TestDataUtil {
                 .troopsCommitted(4_000_000)
                 .casualties(1_800_000)
                 .outcome("Victory")
+                .side("Allied Powers")
                 .build();
     }
 
@@ -295,6 +299,7 @@ public final class TestDataUtil {
                 .troopsCommitted(3_500_000)
                 .casualties(1_400_000)
                 .outcome("Defeat")
+                .side("Central Powers")
                 .build();
     }
 
@@ -307,6 +312,7 @@ public final class TestDataUtil {
                 .troopsCommitted(2_000_000)
                 .casualties(900_000)
                 .outcome("Victory")
+                .side("Allied Powers")
                 .build();
     }
 

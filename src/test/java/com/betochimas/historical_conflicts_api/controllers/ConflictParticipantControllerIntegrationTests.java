@@ -115,7 +115,8 @@ public class ConflictParticipantControllerIntegrationTests extends AbstractInteg
                 .andExpect(jsonPath("$.nationId").value(nation.getId()))
                 .andExpect(jsonPath("$.role").value("ATTACKER"))
                 .andExpect(jsonPath("$.troopsCommitted").value(4_000_000))
-                .andExpect(jsonPath("$.outcome").value("Victory"));
+                .andExpect(jsonPath("$.outcome").value("Victory"))
+                .andExpect(jsonPath("$.side").value("Allied Powers"));
     }
 
     // --- GET all ---
@@ -244,7 +245,8 @@ public class ConflictParticipantControllerIntegrationTests extends AbstractInteg
                 .andExpect(jsonPath("$.id").value(saved.getId()))
                 .andExpect(jsonPath("$.role").value("DEFENDER"))
                 .andExpect(jsonPath("$.troopsCommitted").value(3_500_000))
-                .andExpect(jsonPath("$.outcome").value("Defeat"));
+                .andExpect(jsonPath("$.outcome").value("Defeat"))
+                .andExpect(jsonPath("$.side").value("Central Powers"));
     }
 
     // --- PATCH ---
@@ -299,7 +301,9 @@ public class ConflictParticipantControllerIntegrationTests extends AbstractInteg
                 .andExpect(jsonPath("$.role").value("COALITION"))
                 .andExpect(jsonPath("$.casualties").value(2_000_000))
                 .andExpect(jsonPath("$.troopsCommitted").value(4_000_000))
-                .andExpect(jsonPath("$.outcome").value("Victory"));
+                .andExpect(jsonPath("$.outcome").value("Victory"))
+                // side was not in the PATCH body, so it must be preserved (Allied Powers from DtoA).
+                .andExpect(jsonPath("$.side").value("Allied Powers"));
     }
 
     // --- DELETE ---

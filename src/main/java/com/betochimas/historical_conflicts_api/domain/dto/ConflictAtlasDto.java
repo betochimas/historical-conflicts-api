@@ -85,6 +85,8 @@ public class ConflictAtlasDto {
         private ParticipantRole role;
         private Integer troopsCommitted;
         private Integer casualties;
+        /** Coalition / belligerent group (e.g. "Allied Powers"); free text, nullable. Drives map coalition colors. */
+        private String side;
     }
 
     /**

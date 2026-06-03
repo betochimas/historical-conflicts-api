@@ -18,4 +18,5 @@ public class ConflictParticipantDto {
     private Integer troopsCommitted;
     private Integer casualties;
     private String outcome;
+    private String side;
 }
