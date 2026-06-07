@@ -1,11 +1,16 @@
 package com.betochimas.historical_conflicts_api;
 
+import com.betochimas.historical_conflicts_api.domain.dto.AllianceDto;
+import com.betochimas.historical_conflicts_api.domain.dto.AllianceMemberDto;
 import com.betochimas.historical_conflicts_api.domain.dto.BattleDto;
 import com.betochimas.historical_conflicts_api.domain.dto.ConflictDto;
 import com.betochimas.historical_conflicts_api.domain.dto.ConflictParticipantDto;
 import com.betochimas.historical_conflicts_api.domain.dto.LeaderDto;
 import com.betochimas.historical_conflicts_api.domain.dto.NationDto;
 import com.betochimas.historical_conflicts_api.domain.dto.TheaterDto;
+import com.betochimas.historical_conflicts_api.domain.dto.TreatyDto;
+import com.betochimas.historical_conflicts_api.domain.dto.TreatySignatoryDto;
+import com.betochimas.historical_conflicts_api.domain.model.AllianceType;
 import com.betochimas.historical_conflicts_api.domain.model.BattleEntity;
 import com.betochimas.historical_conflicts_api.domain.model.ConflictEntity;
 import com.betochimas.historical_conflicts_api.domain.model.ConflictParticipantEntity;
@@ -14,7 +19,9 @@ import com.betochimas.historical_conflicts_api.domain.model.LeaderEntity;
 import com.betochimas.historical_conflicts_api.domain.model.LeaderRole;
 import com.betochimas.historical_conflicts_api.domain.model.NationEntity;
 import com.betochimas.historical_conflicts_api.domain.model.ParticipantRole;
+import com.betochimas.historical_conflicts_api.domain.model.SignatoryRole;
 import com.betochimas.historical_conflicts_api.domain.model.TheaterEntity;
+import com.betochimas.historical_conflicts_api.domain.model.TreatyType;
 
 import java.time.LocalDate;
 
@@ -465,6 +472,89 @@ public final class TestDataUtil {
                 .birthYear(1868)
                 .deathYear(1918)
                 .description("Last Russian emperor; overthrown in the February Revolution.")
+                .build();
+    }
+
+    // --- Alliance DTOs ---
+
+    public static AllianceDto createTestAllianceDtoA() {
+        return AllianceDto.builder()
+                .name("Triple Entente")
+                .allianceType(AllianceType.MILITARY)
+                .formedDate(LocalDate.of(1907, 8, 31))
+                .description("The understanding aligning Britain, France, and Russia.")
+                .build();
+    }
+
+    public static AllianceDto createTestAllianceDtoB() {
+        return AllianceDto.builder()
+                .name("Central Powers")
+                .allianceType(AllianceType.COALITION)
+                .formedDate(LocalDate.of(1914, 8, 1))
+                .dissolvedDate(LocalDate.of(1918, 11, 11))
+                .description("The wartime coalition of Germany, Austria-Hungary, and the Ottomans.")
+                .build();
+    }
+
+    // --- AllianceMember DTOs ---
+
+    public static AllianceMemberDto createTestAllianceMemberDtoA(Long allianceId, Long nationId) {
+        return AllianceMemberDto.builder()
+                .allianceId(allianceId)
+                .nationId(nationId)
+                .joinedDate(LocalDate.of(1907, 8, 31))
+                .build();
+    }
+
+    public static AllianceMemberDto createTestAllianceMemberDtoB(Long allianceId, Long nationId) {
+        return AllianceMemberDto.builder()
+                .allianceId(allianceId)
+                .nationId(nationId)
+                .joinedDate(LocalDate.of(1914, 8, 1))
+                .leftDate(LocalDate.of(1918, 11, 11))
+                .build();
+    }
+
+    // --- Treaty DTOs (conflictId is nullable) ---
+
+    public static TreatyDto createTestTreatyDtoA(Long conflictId) {
+        return TreatyDto.builder()
+                .conflictId(conflictId)
+                .name("Treaty of Versailles")
+                .treatyType(TreatyType.PEACE)
+                .signedDate(LocalDate.of(1919, 6, 28))
+                .location("Versailles, France")
+                .description("The principal peace treaty ending WWI.")
+                .build();
+    }
+
+    public static TreatyDto createTestTreatyDtoB(Long conflictId) {
+        return TreatyDto.builder()
+                .conflictId(conflictId)
+                .name("Armistice of 11 November 1918")
+                .treatyType(TreatyType.ARMISTICE)
+                .signedDate(LocalDate.of(1918, 11, 11))
+                .location("Compiègne, France")
+                .description("The armistice that ended the fighting on the Western Front.")
+                .build();
+    }
+
+    // --- TreatySignatory DTOs ---
+
+    public static TreatySignatoryDto createTestTreatySignatoryDtoA(Long treatyId, Long nationId) {
+        return TreatySignatoryDto.builder()
+                .treatyId(treatyId)
+                .nationId(nationId)
+                .role(SignatoryRole.SIGNATORY)
+                .build();
+    }
+
+    public static TreatySignatoryDto createTestTreatySignatoryDtoB(Long treatyId, Long nationId) {
+        return TreatySignatoryDto.builder()
+                .treatyId(treatyId)
+                .nationId(nationId)
+                .role(SignatoryRole.GUARANTOR)
+                .ratifiedDate(LocalDate.of(1919, 10, 13))
                 .build();
     }
 }

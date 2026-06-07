@@ -10,7 +10,9 @@
 -- re-run; keep the two in sync if the seed ever changes.
 -- ============================================================
 
-TRUNCATE conflict_participants, leaders, battles, theaters, conflicts, nations RESTART IDENTITY CASCADE;
+TRUNCATE conflict_participants, leaders, alliance_members, alliances,
+         treaty_signatories, treaties, battles, theaters, conflicts, nations
+         RESTART IDENTITY CASCADE;
 
 -- Nations
 INSERT INTO nations (name, region, founded_year, dissolved_year, description) VALUES
@@ -249,3 +251,117 @@ INSERT INTO conflict_participants (conflict_id, nation_id, role, troops_committe
 SELECT c.id, n.id, 'DEFENDER', 1365000, 170000, 'Defeat', 'Russian Empire'
 FROM conflicts c, nations n
 WHERE c.name = 'Russo-Japanese War' AND n.name = 'Russian Empire';
+
+-- ============================================================
+-- WWI alliances + members (mirrors V17__seed_alliances.sql).
+-- ============================================================
+INSERT INTO alliances (name, alliance_type, formed_date, dissolved_date, description) VALUES
+    ('Triple Entente', 'MILITARY', '1907-08-31', '1917-11-07',
+     'The understanding between Britain, France, and Russia that aligned the principal Allied powers entering WWI.'),
+    ('Central Powers', 'COALITION', '1914-08-01', '1918-11-11',
+     'The wartime coalition of the German Empire, Austria-Hungary, and the Ottoman Empire (later Bulgaria).'),
+    ('Allied Powers', 'COALITION', '1914-09-05', NULL,
+     'The broad WWI coalition opposing the Central Powers, growing to include the United States and Japan.');
+
+INSERT INTO alliance_members (alliance_id, nation_id, joined_date, left_date)
+SELECT a.id, n.id, '1907-08-31', NULL
+FROM alliances a, nations n
+WHERE a.name = 'Triple Entente' AND n.name = 'United Kingdom';
+
+INSERT INTO alliance_members (alliance_id, nation_id, joined_date, left_date)
+SELECT a.id, n.id, '1907-08-31', NULL
+FROM alliances a, nations n
+WHERE a.name = 'Triple Entente' AND n.name = 'France';
+
+INSERT INTO alliance_members (alliance_id, nation_id, joined_date, left_date)
+SELECT a.id, n.id, '1907-08-31', '1917-11-07'
+FROM alliances a, nations n
+WHERE a.name = 'Triple Entente' AND n.name = 'Russian Empire';
+
+INSERT INTO alliance_members (alliance_id, nation_id, joined_date, left_date)
+SELECT a.id, n.id, '1914-08-01', '1918-11-11'
+FROM alliances a, nations n
+WHERE a.name = 'Central Powers' AND n.name = 'German Empire';
+
+INSERT INTO alliance_members (alliance_id, nation_id, joined_date, left_date)
+SELECT a.id, n.id, '1914-08-01', '1918-11-03'
+FROM alliances a, nations n
+WHERE a.name = 'Central Powers' AND n.name = 'Austria-Hungary';
+
+INSERT INTO alliance_members (alliance_id, nation_id, joined_date, left_date)
+SELECT a.id, n.id, '1914-10-29', '1918-10-30'
+FROM alliances a, nations n
+WHERE a.name = 'Central Powers' AND n.name = 'Ottoman Empire';
+
+INSERT INTO alliance_members (alliance_id, nation_id, joined_date, left_date)
+SELECT a.id, n.id, '1914-09-05', NULL
+FROM alliances a, nations n
+WHERE a.name = 'Allied Powers' AND n.name = 'United Kingdom';
+
+INSERT INTO alliance_members (alliance_id, nation_id, joined_date, left_date)
+SELECT a.id, n.id, '1914-09-05', NULL
+FROM alliances a, nations n
+WHERE a.name = 'Allied Powers' AND n.name = 'France';
+
+INSERT INTO alliance_members (alliance_id, nation_id, joined_date, left_date)
+SELECT a.id, n.id, '1914-09-05', '1917-12-15'
+FROM alliances a, nations n
+WHERE a.name = 'Allied Powers' AND n.name = 'Russian Empire';
+
+INSERT INTO alliance_members (alliance_id, nation_id, joined_date, left_date)
+SELECT a.id, n.id, '1917-04-06', NULL
+FROM alliances a, nations n
+WHERE a.name = 'Allied Powers' AND n.name = 'United States';
+
+INSERT INTO alliance_members (alliance_id, nation_id, joined_date, left_date)
+SELECT a.id, n.id, '1914-08-23', NULL
+FROM alliances a, nations n
+WHERE a.name = 'Allied Powers' AND n.name = 'Empire of Japan';
+
+-- ============================================================
+-- WWI treaties + signatories (mirrors V19__seed_treaties.sql).
+-- ============================================================
+INSERT INTO treaties (conflict_id, name, treaty_type, signed_date, location, description)
+SELECT id, 'Treaty of Versailles', 'PEACE', '1919-06-28', 'Versailles, France',
+       'The principal peace treaty ending WWI; imposed territorial losses, disarmament, and reparations on Germany and established the League of Nations.'
+FROM conflicts WHERE name = 'World War I';
+
+INSERT INTO treaties (conflict_id, name, treaty_type, signed_date, location, description)
+SELECT id, 'Armistice of 11 November 1918', 'ARMISTICE', '1918-11-11', 'Compiègne, France',
+       'The armistice signed in Marshal Foch''s railway carriage that ended the fighting on the Western Front.'
+FROM conflicts WHERE name = 'World War I';
+
+INSERT INTO treaty_signatories (treaty_id, nation_id, role, ratified_date)
+SELECT t.id, n.id, 'SIGNATORY', NULL
+FROM treaties t, nations n
+WHERE t.name = 'Treaty of Versailles' AND n.name = 'German Empire';
+
+INSERT INTO treaty_signatories (treaty_id, nation_id, role, ratified_date)
+SELECT t.id, n.id, 'SIGNATORY', '1919-10-13'
+FROM treaties t, nations n
+WHERE t.name = 'Treaty of Versailles' AND n.name = 'France';
+
+INSERT INTO treaty_signatories (treaty_id, nation_id, role, ratified_date)
+SELECT t.id, n.id, 'SIGNATORY', '1919-07-31'
+FROM treaties t, nations n
+WHERE t.name = 'Treaty of Versailles' AND n.name = 'United Kingdom';
+
+INSERT INTO treaty_signatories (treaty_id, nation_id, role, ratified_date)
+SELECT t.id, n.id, 'SIGNATORY', NULL
+FROM treaties t, nations n
+WHERE t.name = 'Treaty of Versailles' AND n.name = 'United States';
+
+INSERT INTO treaty_signatories (treaty_id, nation_id, role, ratified_date)
+SELECT t.id, n.id, 'SIGNATORY', NULL
+FROM treaties t, nations n
+WHERE t.name = 'Armistice of 11 November 1918' AND n.name = 'France';
+
+INSERT INTO treaty_signatories (treaty_id, nation_id, role, ratified_date)
+SELECT t.id, n.id, 'SIGNATORY', NULL
+FROM treaties t, nations n
+WHERE t.name = 'Armistice of 11 November 1918' AND n.name = 'United Kingdom';
+
+INSERT INTO treaty_signatories (treaty_id, nation_id, role, ratified_date)
+SELECT t.id, n.id, 'SIGNATORY', NULL
+FROM treaties t, nations n
+WHERE t.name = 'Armistice of 11 November 1918' AND n.name = 'German Empire';

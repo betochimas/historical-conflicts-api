@@ -5,71 +5,34 @@ import com.betochimas.historical_conflicts_api.service.BattleService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/battles")
 @Tag(name = "Battles", description = "Manage battles within conflicts, with optional filter by conflict")
-public class BattleController {
-
-    private final BattleService battleService;
+public class BattleController extends AbstractCrudController<BattleDto, BattleService> {
 
     public BattleController(BattleService battleService) {
-        this.battleService = battleService;
-    }
-
-    @PostMapping
-    public ResponseEntity<BattleDto> createBattle(@RequestBody BattleDto battleDto) {
-        return new ResponseEntity<>(battleService.create(battleDto), HttpStatus.CREATED);
+        super(battleService);
     }
 
     @GetMapping
-    public ResponseEntity<Page<BattleDto>> listBattles(
+    public ResponseEntity<Page<BattleDto>> list(
             @RequestParam(required = false) Long conflictId,
             @RequestParam(required = false) Long theaterId,
             Pageable pageable) {
         Page<BattleDto> results;
         if (theaterId != null) {
-            results = battleService.findByTheaterId(theaterId, pageable);
+            results = service.findByTheaterId(theaterId, pageable);
         } else if (conflictId != null) {
-            results = battleService.findByConflictId(conflictId, pageable);
+            results = service.findByConflictId(conflictId, pageable);
         } else {
-            results = battleService.findAll(pageable);
+            results = service.findAll(pageable);
         }
         return ResponseEntity.ok(results);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<BattleDto> getBattle(@PathVariable Long id) {
-        return battleService.findOne(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<BattleDto> fullUpdateBattle(
-            @PathVariable Long id,
-            @RequestBody BattleDto battleDto) {
-        if (!battleService.isExists(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(battleService.fullUpdate(id, battleDto));
-    }
-
-    @PatchMapping("/{id}")
-    public ResponseEntity<BattleDto> partialUpdateBattle(
-            @PathVariable Long id,
-            @RequestBody BattleDto battleDto) {
-        return battleService.partialUpdate(id, battleDto)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBattle(@PathVariable Long id) {
-        battleService.delete(id);
-        return ResponseEntity.noContent().build();
     }
 }

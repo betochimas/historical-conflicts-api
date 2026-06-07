@@ -1,11 +1,15 @@
 package com.betochimas.historical_conflicts_api.config;
 
+import com.betochimas.historical_conflicts_api.domain.dto.AllianceDto;
+import com.betochimas.historical_conflicts_api.domain.dto.AllianceMemberDto;
 import com.betochimas.historical_conflicts_api.domain.dto.BattleDto;
 import com.betochimas.historical_conflicts_api.domain.dto.ConflictDto;
 import com.betochimas.historical_conflicts_api.domain.dto.ConflictParticipantDto;
 import com.betochimas.historical_conflicts_api.domain.dto.LeaderDto;
 import com.betochimas.historical_conflicts_api.domain.dto.NationDto;
 import com.betochimas.historical_conflicts_api.domain.dto.TheaterDto;
+import com.betochimas.historical_conflicts_api.domain.dto.TreatyDto;
+import com.betochimas.historical_conflicts_api.domain.dto.TreatySignatoryDto;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import org.springframework.boot.cache.autoconfigure.RedisCacheManagerBuilderCustomizer;
 import org.springframework.cache.CacheManager;
@@ -49,6 +53,10 @@ public class CacheConfig {
     public static final String CONFLICT_PARTICIPANTS = "conflictParticipants";
     public static final String THEATERS = "theaters";
     public static final String LEADERS = "leaders";
+    public static final String ALLIANCES = "alliances";
+    public static final String ALLIANCE_MEMBERS = "allianceMembers";
+    public static final String TREATIES = "treaties";
+    public static final String TREATY_SIGNATORIES = "treatySignatories";
 
     private static final Duration ENTITY_TTL = Duration.ofMinutes(15);
 
@@ -65,7 +73,11 @@ public class CacheConfig {
                 .withCacheConfiguration(BATTLES, entityCache(objectMapper, BattleDto.class))
                 .withCacheConfiguration(CONFLICT_PARTICIPANTS, entityCache(objectMapper, ConflictParticipantDto.class))
                 .withCacheConfiguration(THEATERS, entityCache(objectMapper, TheaterDto.class))
-                .withCacheConfiguration(LEADERS, entityCache(objectMapper, LeaderDto.class));
+                .withCacheConfiguration(LEADERS, entityCache(objectMapper, LeaderDto.class))
+                .withCacheConfiguration(ALLIANCES, entityCache(objectMapper, AllianceDto.class))
+                .withCacheConfiguration(ALLIANCE_MEMBERS, entityCache(objectMapper, AllianceMemberDto.class))
+                .withCacheConfiguration(TREATIES, entityCache(objectMapper, TreatyDto.class))
+                .withCacheConfiguration(TREATY_SIGNATORIES, entityCache(objectMapper, TreatySignatoryDto.class));
     }
 
     private <T> RedisCacheConfiguration entityCache(ObjectMapper objectMapper, Class<T> type) {
@@ -86,7 +98,8 @@ public class CacheConfig {
     @Profile({"prod", "test"})
     public CacheManager caffeineCacheManager() {
         CaffeineCacheManager manager = new CaffeineCacheManager(
-                NATIONS, CONFLICTS, BATTLES, CONFLICT_PARTICIPANTS, THEATERS, LEADERS);
+                NATIONS, CONFLICTS, BATTLES, CONFLICT_PARTICIPANTS, THEATERS, LEADERS,
+                ALLIANCES, ALLIANCE_MEMBERS, TREATIES, TREATY_SIGNATORIES);
         manager.setCaffeine(Caffeine.newBuilder().expireAfterWrite(ENTITY_TTL));
         manager.setAllowNullValues(false);
         return manager;

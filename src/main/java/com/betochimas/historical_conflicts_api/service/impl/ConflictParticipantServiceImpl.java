@@ -1,14 +1,9 @@
 package com.betochimas.historical_conflicts_api.service.impl;
 
 import com.betochimas.historical_conflicts_api.config.CacheConfig;
-import com.betochimas.historical_conflicts_api.config.EntityNotFoundException;
 import com.betochimas.historical_conflicts_api.domain.dto.ConflictParticipantDto;
-import com.betochimas.historical_conflicts_api.domain.model.ConflictEntity;
-import com.betochimas.historical_conflicts_api.domain.model.ConflictParticipantEntity;
-import com.betochimas.historical_conflicts_api.domain.model.NationEntity;
+import com.betochimas.historical_conflicts_api.domain.mapper.ConflictParticipantMapper;
 import com.betochimas.historical_conflicts_api.repository.ConflictParticipantRepository;
-import com.betochimas.historical_conflicts_api.repository.ConflictRepository;
-import com.betochimas.historical_conflicts_api.repository.NationRepository;
 import com.betochimas.historical_conflicts_api.service.ConflictParticipantService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,37 +17,33 @@ import java.util.Optional;
 public class ConflictParticipantServiceImpl implements ConflictParticipantService {
 
     private final ConflictParticipantRepository participantRepository;
-    private final ConflictRepository conflictRepository;
-    private final NationRepository nationRepository;
+    private final ConflictParticipantMapper mapper;
 
-    public ConflictParticipantServiceImpl(
-            ConflictParticipantRepository participantRepository,
-            ConflictRepository conflictRepository,
-            NationRepository nationRepository) {
+    public ConflictParticipantServiceImpl(ConflictParticipantRepository participantRepository,
+                                          ConflictParticipantMapper mapper) {
         this.participantRepository = participantRepository;
-        this.conflictRepository = conflictRepository;
-        this.nationRepository = nationRepository;
+        this.mapper = mapper;
     }
 
     @Override
     public ConflictParticipantDto create(ConflictParticipantDto dto) {
-        return toDto(participantRepository.save(toEntity(dto)));
+        return mapper.toDto(participantRepository.save(mapper.toEntity(dto)));
     }
 
     @Override
     public Page<ConflictParticipantDto> findAll(Pageable pageable) {
-        return participantRepository.findAll(pageable).map(this::toDto);
+        return participantRepository.findAll(pageable).map(mapper::toDto);
     }
 
     @Override
     public Page<ConflictParticipantDto> findByConflictId(Long conflictId, Pageable pageable) {
-        return participantRepository.findByConflictId(conflictId, pageable).map(this::toDto);
+        return participantRepository.findByConflictId(conflictId, pageable).map(mapper::toDto);
     }
 
     @Override
     @Cacheable(cacheNames = CacheConfig.CONFLICT_PARTICIPANTS, key = "#id", unless = "#result == null")
     public Optional<ConflictParticipantDto> findOne(Long id) {
-        return participantRepository.findById(id).map(this::toDto);
+        return participantRepository.findById(id).map(mapper::toDto);
     }
 
     @Override
@@ -64,25 +55,15 @@ public class ConflictParticipantServiceImpl implements ConflictParticipantServic
     @CacheEvict(cacheNames = CacheConfig.CONFLICT_PARTICIPANTS, key = "#id")
     public ConflictParticipantDto fullUpdate(Long id, ConflictParticipantDto dto) {
         dto.setId(id);
-        return toDto(participantRepository.save(toEntity(dto)));
+        return mapper.toDto(participantRepository.save(mapper.toEntity(dto)));
     }
 
     @Override
     @CacheEvict(cacheNames = CacheConfig.CONFLICT_PARTICIPANTS, key = "#id")
     public Optional<ConflictParticipantDto> partialUpdate(Long id, ConflictParticipantDto dto) {
         return participantRepository.findById(id).map(existing -> {
-            Optional.ofNullable(dto.getConflictId())
-                    .flatMap(conflictRepository::findById)
-                    .ifPresent(existing::setConflict);
-            Optional.ofNullable(dto.getNationId())
-                    .flatMap(nationRepository::findById)
-                    .ifPresent(existing::setNation);
-            Optional.ofNullable(dto.getRole()).ifPresent(existing::setRole);
-            Optional.ofNullable(dto.getTroopsCommitted()).ifPresent(existing::setTroopsCommitted);
-            Optional.ofNullable(dto.getCasualties()).ifPresent(existing::setCasualties);
-            Optional.ofNullable(dto.getOutcome()).ifPresent(existing::setOutcome);
-            Optional.ofNullable(dto.getSide()).ifPresent(existing::setSide);
-            return toDto(participantRepository.save(existing));
+            mapper.update(existing, dto);
+            return mapper.toDto(participantRepository.save(existing));
         });
     }
 
@@ -90,35 +71,5 @@ public class ConflictParticipantServiceImpl implements ConflictParticipantServic
     @CacheEvict(cacheNames = CacheConfig.CONFLICT_PARTICIPANTS, key = "#id")
     public void delete(Long id) {
         participantRepository.deleteById(id);
-    }
-
-    private ConflictParticipantEntity toEntity(ConflictParticipantDto dto) {
-        ConflictEntity conflict = conflictRepository.findById(dto.getConflictId())
-                .orElseThrow(() -> new EntityNotFoundException("Conflict", dto.getConflictId()));
-        NationEntity nation = nationRepository.findById(dto.getNationId())
-                .orElseThrow(() -> new EntityNotFoundException("Nation", dto.getNationId()));
-        ConflictParticipantEntity entity = new ConflictParticipantEntity();
-        entity.setId(dto.getId());
-        entity.setConflict(conflict);
-        entity.setNation(nation);
-        entity.setRole(dto.getRole());
-        entity.setTroopsCommitted(dto.getTroopsCommitted());
-        entity.setCasualties(dto.getCasualties());
-        entity.setOutcome(dto.getOutcome());
-        entity.setSide(dto.getSide());
-        return entity;
-    }
-
-    private ConflictParticipantDto toDto(ConflictParticipantEntity entity) {
-        return ConflictParticipantDto.builder()
-                .id(entity.getId())
-                .conflictId(entity.getConflict().getId())
-                .nationId(entity.getNation().getId())
-                .role(entity.getRole())
-                .troopsCommitted(entity.getTroopsCommitted())
-                .casualties(entity.getCasualties())
-                .outcome(entity.getOutcome())
-                .side(entity.getSide())
-                .build();
     }
 }

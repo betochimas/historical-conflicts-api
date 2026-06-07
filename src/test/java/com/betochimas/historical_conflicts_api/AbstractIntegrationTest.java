@@ -73,7 +73,9 @@ public abstract class AbstractIntegrationTest {
     @BeforeEach
     void cleanState() {
         jdbcTemplate.execute(
-            "TRUNCATE conflict_participants, leaders, battles, theaters, conflicts, nations, users RESTART IDENTITY CASCADE"
+            "TRUNCATE conflict_participants, leaders, alliance_members, alliances, "
+                + "treaty_signatories, treaties, battles, theaters, conflicts, nations, users "
+                + "RESTART IDENTITY CASCADE"
         );
         // Clear every cache so entries from one test can't leak into the next. Under the `test`
         // profile this is Caffeine, whose clear() is reliable (cross-test isolation).

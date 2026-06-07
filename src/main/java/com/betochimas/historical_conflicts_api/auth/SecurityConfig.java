@@ -44,7 +44,11 @@ public class SecurityConfig {
                                 "/api/battles/**",
                                 "/api/conflict-participants/**",
                                 "/api/theaters/**",
-                                "/api/leaders/**").permitAll()
+                                "/api/leaders/**",
+                                "/api/alliances/**",
+                                "/api/alliance-members/**",
+                                "/api/treaties/**",
+                                "/api/treaty-signatories/**").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(eh -> eh.authenticationEntryPoint(
                         new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
