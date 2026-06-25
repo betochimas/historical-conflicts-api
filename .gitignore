@@ -5,6 +5,7 @@ application-local.properties
 
 ### Claude Code ###
 CLAUDE.md
+.claude/
 docs/
 target/
 .mvn/wrapper/maven-wrapper.jar
